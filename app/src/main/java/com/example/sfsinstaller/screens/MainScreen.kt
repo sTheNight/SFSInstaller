@@ -1,4 +1,4 @@
-package com.example.sfsinstaller.views
+package com.example.sfsinstaller.screens
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
@@ -29,7 +29,7 @@ import com.example.sfsinstaller.viewmodels.MainViewModel
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
-fun MainView(mainViewModel: MainViewModel) {
+fun MainScreen(mainViewModel: MainViewModel) {
     val appState = mainViewModel.appState.collectAsState().value
     val scrollState = rememberScrollState()
     var aboutDialogShow by remember { mutableStateOf(false) }

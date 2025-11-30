@@ -9,7 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.sfsinstaller.viewmodels.MainViewModel
-import com.example.sfsinstaller.views.MainView
+import com.example.sfsinstaller.screens.MainScreen
 
 @Composable
 fun MainNavigation(
@@ -19,7 +19,7 @@ fun MainNavigation(
     Box() {
         NavHost(modifier = Modifier.fillMaxSize(), navController = navHostController, startDestination = "main") {
             composable("main") {
-                MainView(mainViewModel)
+                MainScreen(mainViewModel)
             }
         }
     }
