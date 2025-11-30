@@ -1,32 +1,30 @@
 package com.example.sfsinstaller.views
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.sfsinstaller.R
+import com.example.sfsinstaller.components.AboutDialog
+import com.example.sfsinstaller.components.ToolbarMenu
 import com.example.sfsinstaller.viewmodels.MainViewModel
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
@@ -34,6 +32,7 @@ import com.example.sfsinstaller.viewmodels.MainViewModel
 fun MainView(mainViewModel: MainViewModel) {
     val appState = mainViewModel.appState.collectAsState().value
     val scrollState = rememberScrollState()
+    var aboutDialogShow by remember { mutableStateOf(false) }
     val context = LocalContext.current
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -42,6 +41,13 @@ fun MainView(mainViewModel: MainViewModel) {
                 TopAppBar(
                     title = {
                         Text(context.getString(R.string.app_name))
+                    },
+                    actions = {
+                        ToolbarMenu(
+                            openAboutDialog = {
+                                aboutDialogShow = true
+                            }
+                        )
                     }
                 )
                 HorizontalDivider(modifier = Modifier.fillMaxWidth())
@@ -54,6 +60,8 @@ fun MainView(mainViewModel: MainViewModel) {
                 .padding(horizontal = 16.dp)
                 .verticalScroll(scrollState)
         ) {
+            if (aboutDialogShow)
+                AboutDialog(closeDialog = { aboutDialogShow = false })
             TestCard(
                 modifier = Modifier.padding(top = 16.dp),
                 onButtonClick = { mainViewModel.appendInfoText() },

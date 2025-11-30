@@ -1,3 +1,17 @@
 <resources>
-    <string name="app_name">SFSInstaller</string>
+    <string name="app_name">SFS Installer</string>
+    <string name="ok">Ok</string>
+    <string name="test_helloworld">Hello World</string>
+    <!-- Main menu options -->
+    <string name="menu_about">About</string>
+    <string name="menu_communication">Communication</string>
+    <!-- Communication menu options -->
+    <string name="communication_join_qq_group">Join QQ Group</string>
+    <string name="communication_join_qq_channel">Join QQ Channel</string>
+    <!-- About dialog -->
+    <string name="about_title">About</string>
+    <string name="about_text">This application is made by 重鉻酸鈉</string>
+    <!-- Accessable -->
+    <string name="access_more_options">More options</string>
+    <string name="access_communi_menu">Communication menu</string>
 </resources>
