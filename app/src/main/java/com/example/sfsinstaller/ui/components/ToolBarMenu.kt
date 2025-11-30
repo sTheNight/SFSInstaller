@@ -1,4 +1,4 @@
-package com.example.sfsinstaller.components
+package com.example.sfsinstaller.ui.components
 
 import android.content.Context
 import androidx.compose.foundation.layout.Box

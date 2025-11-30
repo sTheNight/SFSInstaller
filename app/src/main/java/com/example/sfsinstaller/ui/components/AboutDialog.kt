@@ -1,4 +1,4 @@
-package com.example.sfsinstaller.components
+package com.example.sfsinstaller.ui.components
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text

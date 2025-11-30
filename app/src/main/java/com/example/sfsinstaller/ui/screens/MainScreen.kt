@@ -1,4 +1,4 @@
-package com.example.sfsinstaller.screens
+package com.example.sfsinstaller.ui.screens
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -23,11 +24,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.sfsinstaller.R
-import com.example.sfsinstaller.components.AboutDialog
-import com.example.sfsinstaller.components.ToolbarMenu
-import com.example.sfsinstaller.viewmodels.MainViewModel
+import com.example.sfsinstaller.ui.components.AboutDialog
+import com.example.sfsinstaller.ui.components.ToolbarMenu
+import com.example.sfsinstaller.ui.viewmodels.MainViewModel
 
-@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(mainViewModel: MainViewModel) {
     val appState = mainViewModel.appState.collectAsState().value

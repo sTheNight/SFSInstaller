@@ -1,4 +1,4 @@
-package com.example.sfsinstaller.viewmodels
+package com.example.sfsinstaller.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

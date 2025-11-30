@@ -8,8 +8,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.sfsinstaller.viewmodels.MainViewModel
-import com.example.sfsinstaller.screens.MainScreen
+import com.example.sfsinstaller.ui.viewmodels.MainViewModel
+import com.example.sfsinstaller.ui.screens.MainScreen
 
 @Composable
 fun MainNavigation(
