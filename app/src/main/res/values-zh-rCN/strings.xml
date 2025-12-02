@@ -10,7 +10,7 @@
     <string name="communication_join_qq_channel">加入 QQ 频道</string>
     <!-- About dialog -->
     <string name="about_title">关于</string>
-    <string name="about_text">此应用程序由 重鉻酸鈉 制作</string>
+    <string name="about_text">此应用程序由 重鉻酸鈉 制作\n感谢 @youfeng11 提供的帮助</string>
     <!-- Accessable -->
     <string name="access_more_options">更多选项</string>
     <string name="access_communi_menu">交流菜单</string>

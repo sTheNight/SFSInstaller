@@ -12,11 +12,11 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.sfsinstaller"
+        applicationId = "com.StefMorojna.SpaceflightSimulator"
         minSdk = 29
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 551
+        versionName = "1.5.10.6-9-compose"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

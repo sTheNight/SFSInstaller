@@ -23,6 +23,7 @@ class Network {
         httpClient.newCall(request).execute().use { response ->
             if (!response.isSuccessful)
                 throw IOException("Unexpected code $response")
+            // 非常不安全，但以后再改
             response.body!!.bytes()
         }
     }

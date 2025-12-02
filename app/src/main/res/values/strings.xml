@@ -10,7 +10,7 @@
     <string name="communication_join_qq_channel">Join QQ Channel</string>
     <!-- About dialog -->
     <string name="about_title">About</string>
-    <string name="about_text">This application is made by 重鉻酸鈉</string>
+    <string name="about_text">This application is made by 重鉻酸鈉\nThanks @youfeng11</string>
     <!-- Accessable -->
     <string name="access_more_options">More options</string>
     <string name="access_communi_menu">Communication menu</string>
