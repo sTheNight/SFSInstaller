@@ -30,7 +30,7 @@ fun ToolbarMenu(
         IconButton(onClick = { mainMenuExpanded = !mainMenuExpanded }) {
             Icon(
                 painter = painterResource(R.drawable.more_vert_24px),
-                contentDescription = stringResource(R.string.access_more_options)
+                contentDescription = null
             )
         }
         DropdownMenu(

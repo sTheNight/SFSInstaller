@@ -1,4 +1,4 @@
-package com.example.sfsinstaller
+package com.example.sfsinstaller.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,10 +11,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val _mainViewModel = MainViewModel()
         setContent {
             SFSInstallerTheme {
-                MainNavigation(mainViewModel = _mainViewModel)
+                MainNavigation()
             }
         }
     }
