@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -108,7 +109,7 @@ fun MainScreen(mainViewModel: MainViewModel) {
         ) {
             item {
                 ExecuteCard(
-                    onButtonClick = { mainViewModel.fetchInfomation() },
+                    onButtonClick = { mainViewModel.fetchInfomation(context) },
                     crackChipChecked = appState.crackPatchChecked,
                     translationChipChecked = appState.translationChecked,
                     toggleCrackPatch = { mainViewModel.toggleCrackPatch() },
@@ -130,7 +131,9 @@ fun MainScreen(mainViewModel: MainViewModel) {
             }
             if (BuildConfig.IS_DEBUG)
                 item {
-                    AppStateCard(appState = appState)
+                    AppStateCard(
+                        appState = appState
+                    )
                 }
         }
     }
@@ -260,16 +263,18 @@ fun InfoCard(
                     .fillMaxWidth()
             ) {
                 infoSource.map { msg ->
-                    Text(
-                        text = msg.info,
-                        fontSize = 14.sp,
-                        lineHeight = 14.sp,
-                        color = when (msg.level) {
-                            InfoLevel.LEVEL_INFO -> MaterialTheme.colorScheme.onBackground
-                            InfoLevel.LEVEL_WARNING -> Color(0xFFFFA000)
-                            InfoLevel.LEVEL_ERROR -> MaterialTheme.colorScheme.error
-                        }
-                    )
+                    SelectionContainer() {
+                        Text(
+                            text = msg.info,
+                            fontSize = 14.sp,
+                            lineHeight = 18.sp,
+                            color = when (msg.level) {
+                                InfoLevel.LEVEL_INFO -> MaterialTheme.colorScheme.onBackground
+                                InfoLevel.LEVEL_WARNING -> Color(0xFFFFA000)
+                                InfoLevel.LEVEL_ERROR -> MaterialTheme.colorScheme.error
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -278,6 +283,7 @@ fun InfoCard(
 
 @Composable
 fun AppStateCard(appState: AppState) {
+    val context = LocalContext.current
     OutlinedCard() {
         Text(appState.toString())
     }
