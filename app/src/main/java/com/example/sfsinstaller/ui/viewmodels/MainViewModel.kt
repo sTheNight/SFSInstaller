@@ -136,7 +136,11 @@ class MainViewModel(
                                 context = context
                             )
                         }
+                        val releaseTranslationSelectionFile = async {
+                            true
+                        }
                         tasks.add(translationTask)
+                        tasks.add(releaseTranslationSelectionFile)
                     }
 
                     if (appState.value.isCrackPatchChecked) {
@@ -176,7 +180,7 @@ class MainViewModel(
                             InfoLevel.LEVEL_ERROR
                         )
                     }
-                    InstallApk(context)
+                    installApk(context)
                     setTaskRunningFalse()
                 }
             } catch (e: Exception) {
@@ -192,7 +196,7 @@ class MainViewModel(
         destPath: Path,
         context: Context
     ): Boolean {
-        return try {
+        try {
             if (!fileInfo.useable) {
                 throw IllegalStateException(context.getString(R.string.file_unusable, displayName))
             }
@@ -306,7 +310,7 @@ class MainViewModel(
         }
     }
 
-    suspend fun InstallApk(context: Context) {
+    suspend fun installApk(context: Context) {
         closeRetryDialog()
         if (!context.packageManager.canRequestPackageInstalls()) {
             openRetryDialog()
