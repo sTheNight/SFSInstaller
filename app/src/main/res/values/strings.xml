@@ -4,21 +4,18 @@
     <string name="retry">重试</string>
     <string name="cancle">取消</string>
     <string name="test_helloworld">Hello World</string>
-    <!-- Retry dialog -->
     <string name="retry_msg">你需要授予安装未知应用权限，否则无法继续下一步操作</string>
-    <!-- Install option -->
     <string name="mod_patch">破解补丁</string>
     <string name="translation">汉化包</string>
     <string name="network_required_tips">请确保你有良好的网络连接</string>
     <string name="install">安装</string>
     <string name="execute">执行</string>
-    <!-- Main menu options -->
     <string name="menu_about">关于</string>
     <string name="menu_communication">交流</string>
-    <!-- Communication menu options -->
     <string name="communication_join_qq_group">加入 QQ 群</string>
     <string name="communication_join_qq_channel">加入 QQ 频道</string>
-    <!-- About dialog -->
     <string name="about_title">关于</string>
-    <string name="about_text">此应用程序由 重鉻酸鈉 制作\n感谢 @youfeng11 提供的帮助</string>
+    <string name="info_text_html"><![CDATA[由 <b><a href="https://izako.cc">重铬酸钠</a></b> 制作<br/>
+在 <b><a href="{0}">QQ 群</a></b> 获取更新<br/>
+由 <b><a href="https://youfeng11.github.io/">由风</a></b> 提供帮助]]></string>
 </resources>

@@ -170,17 +170,16 @@ class MainViewModel(
     ): Boolean {
         return try {
             if (!fileInfo.useable) {
-                throw IllegalStateException("${displayName} 不可用")
+                throw IllegalStateException("${displayName}不可用")
             }
 
             val fileURL = fileInfo.link.takeIf { it.isNotEmpty() }
-                ?: throw IllegalArgumentException("${displayName} 链接为空")
+                ?: throw IllegalArgumentException("${displayName}链接为空")
 
-            appendInfoText("正在下载 ${displayName}")
+            appendInfoText("正在释放${displayName}")
 
             val network = Network()
             val bytes = network.fetchDataAsBytes(fileURL)
-            appendInfoText("${displayName} 大小: ${bytes.size} Byte")
 
             val parentDir = destPath?.parent
             if (parentDir != null && !FileSystem.SYSTEM.exists(parentDir)) {
@@ -190,17 +189,17 @@ class MainViewModel(
             FileSystem.SYSTEM.sink(destPath).buffer().use { sink ->
                 sink.write(bytes)
             }
-            appendInfoText("${displayName} 写入完成")
+            appendInfoText("${displayName}释放完成")
             true
         } catch (e: Exception) {
-            appendInfoText("释放 ${displayName} 失败: ${e.message}", InfoLevel.LEVEL_ERROR)
+            appendInfoText("释放${displayName}失败: ${e.message}", InfoLevel.LEVEL_ERROR)
             false
         }
     }
 
     suspend fun releaseApkFile(context: Context): Boolean {
         return try {
-            appendInfoText("正在释放 APK 文件…")
+            appendInfoText("正在释放 APK 文件")
 
             val assetManager = context.assets
             val inputStream = assetManager.open("sfs.apk")
@@ -225,7 +224,7 @@ class MainViewModel(
                 }
             }
 
-            appendInfoText("APK 文件写入完成")
+            appendInfoText("APK 文件释放完成")
             true
         } catch (e: Exception) {
             appendInfoText("释放 APK 文件失败: ${e.message}", InfoLevel.LEVEL_ERROR)
@@ -237,7 +236,7 @@ class MainViewModel(
         closeRetryDialog()
         if (!context.packageManager.canRequestPackageInstalls()) {
             openRetryDialog()
-            appendInfoText("无法安装未知应用，请授予权限后重试", InfoLevel.LEVEL_ERROR)
+            appendInfoText("无法安装未知应用，请授予权限后重试", InfoLevel.LEVEL_WARNING)
             delay(1000L)
             val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
                 .setData(Uri.parse("package:${context.packageName}"))
@@ -263,7 +262,7 @@ class MainViewModel(
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             context.startActivity(installIntent)
-            appendInfoText("安装器已启动")
+            appendInfoText("尝试调起安装器")
         }
     }
 }

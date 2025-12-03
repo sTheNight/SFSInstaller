@@ -296,7 +296,7 @@ fun RetryDialog(
     retryInstall: () -> Unit
 ) {
     AlertDialog(
-        onDismissRequest = { closeDialog() },
+        onDismissRequest = {  },
         title = {
             Text(stringResource(R.string.retry))
         },
