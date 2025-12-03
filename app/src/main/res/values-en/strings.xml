@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SFS Installer</string>
+    <string name="ok">OK</string>
+    <string name="retry">Retry</string>
+    <string name="cancle">Cancel</string>
+    <string name="test_helloworld">Hello World</string>
+    <string name="retry_msg">You need to grant permission to install unknown apps, otherwise you cannot continue to the next step.</string>
+    <string name="mod_patch">Mod Patch</string>
+    <string name="translation">Translation Pack</string>
+    <string name="network_required_tips">Please ensure you have a good network connection.</string>
+    <string name="install">Install</string>
+    <string name="execute">Execute</string>
+    <string name="menu_about">About</string>
+    <string name="menu_communication">Communication</string>
+    <string name="communication_join_qq_group">Join QQ Group</string>
+    <string name="communication_join_qq_channel">Join QQ Channel</string>
+    <string name="about_title">About</string>
+    <string name="info_text_html"><![CDATA[Made by <b><a href="https://izako.cc">@sTheNight</a></b><br/>
+Get updates in the <b><a href="https://qm.qq.com/q/gf5BCQXqTu">QQ Group</a></b><br/>
+Assisted by <b><a href="https://youfeng11.github.io/">@youfeng11</a></b>]]></string>
+    <string name="get_cutsom_translation_fold_failed">Failed to get Custom Translations directory</string>
+    <string name="success_get_data">Data fetched successfully</string>
+    <string name="all_task_completed">All tasks have been completed</string>
+    <string name="task_failed">Task execution failed</string>
+    <string name="file_unusable">%1$s is unusable</string>
+    <string name="file_link_null">Link for %1$s is null</string>
+    <string name="file_releasing">Releasing %1$s</string>
+    <string name="file_released">%1$s released successfully</string>
+    <string name="file_release_failed">Failed to release %1$s: %2$s</string>
+    <string name="file_apk"> Game APK </string>
+    <string name="failed_to_install_no_permission">Cannot install unknown apps. Please grant permission and try again.</string>
+    <string name="try_to_install">Attempting to launch installer</string>
+</resources>

@@ -68,6 +68,7 @@ class MainViewModel(
             )
         }
     }
+
     private fun setTaskRunningTrue() {
         _appState.update { it.copy(isTaskRunning = true) }
     }
@@ -75,6 +76,7 @@ class MainViewModel(
     private fun setTaskRunningFalse() {
         _appState.update { it.copy(isTaskRunning = false) }
     }
+
     fun closeRetryDialog() {
         _appState.update {
             it.copy(
@@ -82,6 +84,7 @@ class MainViewModel(
             )
         }
     }
+
     fun openRetryDialog() {
         _appState.update {
             it.copy(
@@ -105,7 +108,10 @@ class MainViewModel(
                 val tasks = mutableListOf<Deferred<Boolean>>()
 
                 if (data.isNotEmpty()) {
-                    appendInfoText("获取数据成功", InfoLevel.LEVEL_INFO)
+                    appendInfoText(
+                        context.getString(R.string.success_get_data),
+                        InfoLevel.LEVEL_INFO
+                    )
 
                     val remoteFile = Json.decodeFromString<RemoteFile>(data)
                     _appState.update { it.copy(remoteInfoData = remoteFile) }
@@ -115,16 +121,18 @@ class MainViewModel(
                     val dataDirPath = context.dataDir.absolutePath.toPath()
 
                     if (appState.value.translationChecked && remoteFile.translation != null) {
-                        val translationDir = externalFileDirPath?.div("Custom Translations") ?: run {
-                            throw IllegalStateException("获取 Custom Translations 目录失败")
-                        }
+                        val translationDir =
+                            externalFileDirPath?.div("Custom Translations") ?: run {
+                                throw IllegalStateException(context.getString(R.string.get_cutsom_translation_fold_failed))
+                            }
                         val translationPath: Path =
                             translationDir / "${remoteFile.translation.name}"
                         val translationTask = async {
                             releaseFile(
                                 fileInfo = remoteFile.translation,
                                 displayName = context.getString(R.string.translation),
-                                destPath = translationPath
+                                destPath = translationPath,
+                                context = context
                             )
                         }
                         tasks.add(translationTask)
@@ -138,7 +146,8 @@ class MainViewModel(
                             releaseFile(
                                 fileInfo = remoteFile.modPatch,
                                 displayName = context.getString(R.string.mod_patch),
-                                destPath = modPatchPath
+                                destPath = modPatchPath,
+                                context = context
                             )
                         }
                         tasks.add(modPatchTask)
@@ -149,9 +158,12 @@ class MainViewModel(
                     tasks.add(releaseApkTask)
                     val results = tasks.awaitAll()
                     if (results.all { it }) {
-                        appendInfoText("所有任务均已完成")
+                        appendInfoText(context.getString(R.string.all_task_completed))
                     } else {
-                        appendInfoText("任务执行失败", InfoLevel.LEVEL_ERROR)
+                        appendInfoText(
+                            context.getString(R.string.task_failed),
+                            InfoLevel.LEVEL_ERROR
+                        )
                     }
                     InstallApk(context)
                     setTaskRunningFalse()
@@ -166,17 +178,23 @@ class MainViewModel(
     suspend fun releaseFile(
         fileInfo: FileInfo,
         displayName: String,
-        destPath: Path
+        destPath: Path,
+        context: Context
     ): Boolean {
         return try {
             if (!fileInfo.useable) {
-                throw IllegalStateException("${displayName}不可用")
+                throw IllegalStateException(context.getString(R.string.file_unusable, displayName))
             }
 
             val fileURL = fileInfo.link.takeIf { it.isNotEmpty() }
-                ?: throw IllegalArgumentException("${displayName}链接为空")
+                ?: throw IllegalArgumentException(
+                    context.getString(
+                        R.string.file_link_null,
+                        displayName
+                    )
+                )
 
-            appendInfoText("正在释放${displayName}")
+            appendInfoText(context.getString(R.string.file_releasing, displayName))
 
             val network = Network()
             val bytes = network.fetchDataAsBytes(fileURL)
@@ -189,17 +207,28 @@ class MainViewModel(
             FileSystem.SYSTEM.sink(destPath).buffer().use { sink ->
                 sink.write(bytes)
             }
-            appendInfoText("${displayName}释放完成")
+            appendInfoText(context.getString(R.string.file_released, displayName))
             true
         } catch (e: Exception) {
-            appendInfoText("释放${displayName}失败: ${e.message}", InfoLevel.LEVEL_ERROR)
+            appendInfoText(
+                context.getString(
+                    R.string.file_release_failed,
+                    displayName,
+                    e.message.toString()
+                ), InfoLevel.LEVEL_ERROR
+            )
             false
         }
     }
 
-    suspend fun releaseApkFile(context: Context): Boolean {
+    fun releaseApkFile(context: Context): Boolean {
         return try {
-            appendInfoText("正在释放 APK 文件")
+            appendInfoText(
+                context.getString(
+                    R.string.file_releasing,
+                    context.getString(R.string.file_apk)
+                )
+            )
 
             val assetManager = context.assets
             val inputStream = assetManager.open("sfs.apk")
@@ -224,10 +253,21 @@ class MainViewModel(
                 }
             }
 
-            appendInfoText("APK 文件释放完成")
+            appendInfoText(
+                context.getString(
+                    R.string.file_released,
+                    context.getString(R.string.file_apk)
+                )
+            )
             true
         } catch (e: Exception) {
-            appendInfoText("释放 APK 文件失败: ${e.message}", InfoLevel.LEVEL_ERROR)
+            appendInfoText(
+                context.getString(
+                    R.string.file_release_failed,
+                    context.getString(R.string.file_apk),
+                    e.message.toString()
+                ), InfoLevel.LEVEL_ERROR
+            )
             false
         }
     }
@@ -236,7 +276,7 @@ class MainViewModel(
         closeRetryDialog()
         if (!context.packageManager.canRequestPackageInstalls()) {
             openRetryDialog()
-            appendInfoText("无法安装未知应用，请授予权限后重试", InfoLevel.LEVEL_WARNING)
+            appendInfoText(context.getString(R.string.failed_to_install_no_permission), InfoLevel.LEVEL_WARNING)
             delay(1000L)
             val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
                 .setData(Uri.parse("package:${context.packageName}"))
@@ -262,7 +302,7 @@ class MainViewModel(
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             context.startActivity(installIntent)
-            appendInfoText("尝试调起安装器")
+            appendInfoText(context.getString(R.string.try_to_install))
         }
     }
 }

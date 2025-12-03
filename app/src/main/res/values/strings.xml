@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">SFS安装器</string>
     <string name="ok">确认</string>
@@ -18,4 +19,16 @@
     <string name="info_text_html"><![CDATA[由 <b><a href="https://izako.cc">重铬酸钠</a></b> 制作<br/>
 在 <b><a href="https://qm.qq.com/q/gf5BCQXqTu">QQ 群</a></b> 获取更新<br/>
 由 <b><a href="https://youfeng11.github.io/">由风</a></b> 提供帮助]]></string>
+    <string name="get_cutsom_translation_fold_failed">获取 Custom Translations 目录失败</string>
+    <string name="success_get_data">获取数据成功</string>
+    <string name="all_task_completed">所有任务均已完成</string>
+    <string name="task_failed">任务执行失败</string>
+    <string name="file_unusable">%1$s不可用</string>
+    <string name="file_link_null">%1$s链接为空</string>
+    <string name="file_releasing">正在释放%1$s</string>
+    <string name="file_released">%1$s释放完成</string>
+    <string name="file_release_failed">%1$s释放失败：%2$s</string>
+    <string name="file_apk">游戏安装包</string>
+    <string name="failed_to_install_no_permission">无法安装未知应用，请授予权限后重试</string>
+    <string name="try_to_install">尝试调起安装器</string>
 </resources>
