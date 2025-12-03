@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,7 +31,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -53,7 +51,9 @@ import com.example.sfsinstaller.R
 import com.example.sfsinstaller.models.InfoLevel
 import com.example.sfsinstaller.models.InfoMsg
 import com.example.sfsinstaller.ui.components.AboutDialog
+import com.example.sfsinstaller.ui.components.RetryDialog
 import com.example.sfsinstaller.ui.components.ToolbarMenu
+import com.example.sfsinstaller.ui.components.WarningDialog
 import com.example.sfsinstaller.ui.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
 
@@ -67,9 +67,15 @@ fun MainScreen(mainViewModel: MainViewModel) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     if (isAboutDialogShow)
-        AboutDialog(closeDialog = { isAboutDialogShow = false })
+        AboutDialog(
+            closeDialog = {
+                isAboutDialogShow = false
+            }
+        )
     if (isWarningDialogShow)
-        WarningDialog { isWarningDialogShow = false }
+        WarningDialog {
+            isWarningDialogShow = false
+        }
     if (appState.isRetryDialogShow)
         RetryDialog(
             retryInstall = {
@@ -79,11 +85,14 @@ fun MainScreen(mainViewModel: MainViewModel) {
             },
             closeDialog = {
                 mainViewModel.closeRetryDialog()
-            })
+            }
+        )
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 TopAppBar(
                     title = {
                         Text(context.getString(R.string.app_name))
@@ -96,7 +105,9 @@ fun MainScreen(mainViewModel: MainViewModel) {
                         )
                     }
                 )
-                HorizontalDivider(modifier = Modifier.fillMaxWidth())
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
         }
     ) { paddingValues ->
@@ -292,48 +303,4 @@ fun InfoCard(
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun RetryDialog(
-    closeDialog: () -> Unit,
-    retryInstall: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = {  },
-        title = {
-            Text(stringResource(R.string.retry))
-        },
-        confirmButton = {
-            TextButton(onClick = { retryInstall() }) {
-                Text(stringResource(R.string.retry))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = { closeDialog() }) {
-                Text(stringResource(R.string.cancle))
-            }
-        },
-        text = {
-            Text(stringResource(R.string.retry_msg))
-        }
-    )
-}
-@Composable
-fun WarningDialog(closeDialog: () -> Unit) {
-    AlertDialog(
-        title = {
-            Text(stringResource(R.string.warning_dialog_title))
-        },
-        onDismissRequest = {},
-        confirmButton = {
-            TextButton(onClick = {
-                closeDialog()
-            }) { Text(stringResource(R.string.ok)) }
-        },
-        text = {
-            Text(stringResource(R.string.warning_dialog_msg))
-        }
-    )
 }
