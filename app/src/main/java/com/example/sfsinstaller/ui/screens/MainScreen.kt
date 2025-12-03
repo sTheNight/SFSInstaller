@@ -74,7 +74,7 @@ fun MainScreen(mainViewModel: MainViewModel) {
         RetryDialog(
             retryInstall = {
                 coroutineScope.launch {
-                    mainViewModel.InstallApk(context)
+                    mainViewModel.installApk(context)
                 }
             },
             closeDialog = {
