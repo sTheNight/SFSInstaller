@@ -34,4 +34,7 @@
     <string name="warning_dialog_title">警告</string>
     <string name="warning_dialog_msg">使用此安装器后若出现地图无法打开或进游戏黑屏等影响游戏游玩体验的情况，请尝试清除缓存后重进，若仍无法解决请放弃使用此安装器。\n\n本应用仅供学习使用，请支持正版！！</string>
     <string name="no_installation_options_checked">未勾选任何安装项，将安装原版游戏</string>
+    <string name="file_hash_mismatch">%1$s哈希校验失败，当前哈希值：%2$s</string>
+    <string name="file_hash_missing">%1$s哈希值不存在！</string>
+    <string name="version_not_compatible">当前版本与适配版本不符，可能会存在问题，请尝试进入 QQ 群获取最新版</string>
 </resources>

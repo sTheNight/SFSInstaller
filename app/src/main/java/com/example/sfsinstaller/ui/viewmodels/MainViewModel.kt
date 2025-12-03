@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import okio.FileSystem
+import okio.HashingSink
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.buffer
@@ -108,10 +109,7 @@ class MainViewModel(
                 val tasks = mutableListOf<Deferred<Boolean>>()
 
                 if (data.isNotEmpty()) {
-                    appendInfoText(
-                        context.getString(R.string.success_get_data),
-                        InfoLevel.LEVEL_INFO
-                    )
+                    appendInfoText(context.getString(R.string.success_get_data))
 
                     val remoteFile = Json.decodeFromString<RemoteFile>(data)
                     _appState.update { it.copy(remoteInfoData = remoteFile) }
@@ -120,13 +118,16 @@ class MainViewModel(
                         context.getExternalFilesDir(null)?.absolutePath?.toPath()
                     val dataDirPath = context.dataDir.absolutePath.toPath()
 
-                    if (appState.value.isTranslationChecked && remoteFile.translation != null) {
+                    if (remoteFile.compatibleVersion != Constant.COMPATIBLE_VERSION)
+                        appendInfoText(context.getString(R.string.version_not_compatible))
+
+                    if (appState.value.isTranslationChecked) {
                         val translationDir =
                             externalFileDirPath?.div("Custom Translations") ?: run {
                                 throw IllegalStateException(context.getString(R.string.get_cutsom_translation_fold_failed))
                             }
                         val translationPath: Path =
-                            translationDir / "${remoteFile.translation.name}"
+                            translationDir / remoteFile.translation.name
                         val translationTask = async {
                             releaseFile(
                                 fileInfo = remoteFile.translation,
@@ -138,9 +139,9 @@ class MainViewModel(
                         tasks.add(translationTask)
                     }
 
-                    if (appState.value.isCrackPatchChecked && remoteFile.modPatch != null) {
+                    if (appState.value.isCrackPatchChecked) {
                         val modPatchDir = dataDirPath.div("shared_prefs")
-                        val modPatchPath: Path = modPatchDir / "${remoteFile.modPatch.name}"
+                        val modPatchPath: Path = modPatchDir / remoteFile.modPatch.name
 
                         val modPatchTask = async {
                             releaseFile(
@@ -209,16 +210,39 @@ class MainViewModel(
             val network = Network()
             val bytes = network.fetchDataAsBytes(fileURL)
 
-            val parentDir = destPath?.parent
+            val parentDir = destPath.parent
             if (parentDir != null && !FileSystem.SYSTEM.exists(parentDir)) {
                 FileSystem.SYSTEM.createDirectories(parentDir)
             }
 
-            FileSystem.SYSTEM.sink(destPath).buffer().use { sink ->
+            val fileSink = FileSystem.SYSTEM.sink(destPath).buffer()
+
+            val hashingSink = HashingSink.sha256(fileSink)
+
+            hashingSink.buffer().use { sink ->
                 sink.write(bytes)
             }
+
+            if (fileInfo.hash.isNotEmpty()) {
+                val calculatedHash = hashingSink.hash.hex()
+                val expectedHash = fileInfo.hash
+
+                if (!calculatedHash.equals(expectedHash, ignoreCase = true)) {
+                    appendInfoText(
+                        context.getString(
+                            R.string.file_hash_mismatch,
+                            displayName,
+                            calculatedHash
+                        ), InfoLevel.LEVEL_WARNING
+                    )
+                }
+            } else {
+                appendInfoText(context.getString(R.string.file_hash_missing, displayName))
+            }
+
             appendInfoText(context.getString(R.string.file_released, displayName))
-            true
+            return true
+
         } catch (e: Exception) {
             appendInfoText(
                 context.getString(
@@ -227,7 +251,7 @@ class MainViewModel(
                     e.message.toString()
                 ), InfoLevel.LEVEL_ERROR
             )
-            false
+            return false
         }
     }
 

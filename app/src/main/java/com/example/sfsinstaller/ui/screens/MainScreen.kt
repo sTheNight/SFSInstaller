@@ -279,7 +279,8 @@ fun InfoCard(
                         Text(
                             text = msg.info,
                             fontSize = 14.sp,
-                            lineHeight = 18.sp,
+                            lineHeight = 14.sp,
+                            modifier = Modifier.padding(bottom = 2.dp, top = 2.dp),
                             color = when (msg.level) {
                                 InfoLevel.LEVEL_INFO -> MaterialTheme.colorScheme.onBackground
                                 InfoLevel.LEVEL_WARNING -> Color(0xFFFFA000)
