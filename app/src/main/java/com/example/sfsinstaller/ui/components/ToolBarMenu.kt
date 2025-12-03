@@ -1,6 +1,5 @@
 package com.example.sfsinstaller.ui.components
 
-import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -46,7 +45,7 @@ fun ToolbarMenu(
                 trailingIcon = {
                     Icon(
                         painter = painterResource(R.drawable.arrow_right_24px),
-                        contentDescription = stringResource(R.string.access_communi_menu)
+                        contentDescription = null
                     )
                 }
             )

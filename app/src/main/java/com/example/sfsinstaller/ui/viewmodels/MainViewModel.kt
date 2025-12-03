@@ -4,10 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.FileProvider
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.sfsinstaller.R
 import com.example.sfsinstaller.models.FileInfo
 import com.example.sfsinstaller.models.InfoLevel
 import com.example.sfsinstaller.models.InfoMsg
@@ -113,20 +115,15 @@ class MainViewModel(
                     val dataDirPath = context.dataDir.absolutePath.toPath()
 
                     if (appState.value.translationChecked && remoteFile.translation != null) {
-                        val translationDir = externalFileDirPath?.div("Custom Translations")
-                            ?: run {
-                                appendInfoText(
-                                    "获取 Custom Translations 目录失败",
-                                    InfoLevel.LEVEL_ERROR
-                                )
-                                return@launch
-                            }
+                        val translationDir = externalFileDirPath?.div("Custom Translations") ?: run {
+                            throw IllegalStateException("获取 Custom Translations 目录失败")
+                        }
                         val translationPath: Path =
                             translationDir / "${remoteFile.translation.name}"
                         val translationTask = async {
                             releaseFile(
                                 fileInfo = remoteFile.translation,
-                                displayName = "汉化包",
+                                displayName = context.getString(R.string.translation),
                                 destPath = translationPath
                             )
                         }
@@ -140,7 +137,7 @@ class MainViewModel(
                         val modPatchTask = async {
                             releaseFile(
                                 fileInfo = remoteFile.modPatch,
-                                displayName = "破解补丁",
+                                displayName = context.getString(R.string.mod_patch),
                                 destPath = modPatchPath
                             )
                         }
@@ -160,7 +157,7 @@ class MainViewModel(
                     setTaskRunningFalse()
                 }
             } catch (e: Exception) {
-                appendInfoText("获取远程信息失败: ${e.message}", InfoLevel.LEVEL_ERROR)
+                appendInfoText("${e.message}", InfoLevel.LEVEL_ERROR)
                 setTaskRunningFalse()
             }
         }

@@ -13,25 +13,15 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -40,15 +30,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TooltipAnchorPosition
-import androidx.compose.material3.TooltipBox
-import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -61,17 +46,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.sfsinstaller.BuildConfig
 import com.example.sfsinstaller.R
 import com.example.sfsinstaller.models.InfoLevel
 import com.example.sfsinstaller.models.InfoMsg
 import com.example.sfsinstaller.ui.components.AboutDialog
 import com.example.sfsinstaller.ui.components.ToolbarMenu
-import com.example.sfsinstaller.ui.viewmodels.AppState
 import com.example.sfsinstaller.ui.viewmodels.MainViewModel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -175,19 +158,19 @@ fun ExecuteCard(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.box_add_24px),
-                    contentDescription = "install icon",
+                    contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
                         .size(24.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "安装",
+                    text = stringResource(R.string.install),
                     style = MaterialTheme.typography.titleMedium
                 )
             }
             Text(
-                text = "请确保你有良好的网络连接",
+                text = stringResource(R.string.network_required_tips),
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -198,7 +181,7 @@ fun ExecuteCard(
             ) {
                 FilterChip(
                     onClick = { toggleCrackPatch() },
-                    label = { Text("破解补丁") },
+                    label = { Text(stringResource(R.string.mod_patch)) },
                     selected = crackChipChecked,
                     leadingIcon = {
                         if (crackChipChecked)
@@ -212,7 +195,7 @@ fun ExecuteCard(
 
                 FilterChip(
                     onClick = { toggleTranslation() },
-                    label = { Text("汉化包") },
+                    label = { Text(stringResource(R.string.translation)) },
                     selected = translationChipChecked,
                     leadingIcon = {
                         if (translationChipChecked)
@@ -248,7 +231,7 @@ fun ExecuteCard(
 
                     Spacer(modifier = Modifier.width(4.dp))
 
-                    Text("执行")
+                    Text(stringResource(R.string.execute))
                 }
 
             }
@@ -315,20 +298,20 @@ fun RetryDialog(
     AlertDialog(
         onDismissRequest = { closeDialog() },
         title = {
-            Text("Retry")
+            Text(stringResource(R.string.retry))
         },
         confirmButton = {
             TextButton(onClick = { retryInstall() }) {
-                Text("Retry")
+                Text(stringResource(R.string.retry))
             }
         },
         dismissButton = {
             TextButton(onClick = { closeDialog() }) {
-                Text("Cancle")
+                Text(stringResource(R.string.cancle))
             }
         },
         text = {
-            Text("你需要授予安装未知应用权限，否则无法继续下一步操作")
+            Text(stringResource(R.string.retry_msg))
         }
     )
 }
