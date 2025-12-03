@@ -25,6 +25,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import okio.FileSystem
 import okio.HashingSink
 import okio.Path
@@ -32,6 +34,7 @@ import okio.Path.Companion.toPath
 import okio.buffer
 import okio.source
 import java.io.File
+import java.io.IOException
 
 class MainViewModel(
     state: SavedStateHandle
@@ -137,7 +140,7 @@ class MainViewModel(
                             )
                         }
                         val releaseTranslationSelectionFile = async {
-                            true
+                            releaseTranslationSelectionFile(remoteFile.translation,context)
                         }
                         tasks.add(translationTask)
                         tasks.add(releaseTranslationSelectionFile)
@@ -175,10 +178,7 @@ class MainViewModel(
                     if (results.all { it }) {
                         appendInfoText(context.getString(R.string.all_task_completed))
                     } else {
-                        appendInfoText(
-                            context.getString(R.string.task_failed),
-                            InfoLevel.LEVEL_ERROR
-                        )
+                        throw IOException(context.getString(R.string.task_failed))
                     }
                     installApk(context)
                     setTaskRunningFalse()
@@ -256,6 +256,37 @@ class MainViewModel(
                 ), InfoLevel.LEVEL_ERROR
             )
             return false
+        }
+    }
+
+    fun releaseTranslationSelectionFile(
+        fileInfo: FileInfo,
+        context: Context
+    ) : Boolean {
+        return try {
+            val externalFileDirPath =
+                context.getExternalFilesDir(null)?.absolutePath?.toPath()
+            val translationSelectionFile = externalFileDirPath?.div("Saving")?.div("Settings")?.div("LanguageSettings_2.txt") as Path
+            val parentPath = translationSelectionFile?.parent
+            if (parentPath!=null && !FileSystem.SYSTEM.exists(parentPath))
+                FileSystem.SYSTEM.createDirectories(parentPath)
+
+            val json = Json { prettyPrint = true }
+            val content = json.encodeToString(
+                buildJsonObject {
+                    put("name", fileInfo.name.substringBeforeLast('.'))
+                    put("custom", true)
+                }
+            )
+
+            FileSystem.SYSTEM.sink(translationSelectionFile).buffer().use { sink ->
+                sink.write(content.toByteArray())
+            }
+
+            true
+        } catch (e : Exception) {
+            appendInfoText(e.message.toString(), InfoLevel.LEVEL_ERROR)
+            false
         }
     }
 
