@@ -61,12 +61,16 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(mainViewModel: MainViewModel) {
     val appState = mainViewModel.appState.collectAsState().value
-    var aboutDialogShow by remember { mutableStateOf(false) }
+
+    var isAboutDialogShow by remember { mutableStateOf(false) }
+    var isWarningDialogShow by remember { mutableStateOf(true) }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    if (aboutDialogShow)
-        AboutDialog(closeDialog = { aboutDialogShow = false })
-    if (appState.retryDialogShow)
+    if (isAboutDialogShow)
+        AboutDialog(closeDialog = { isAboutDialogShow = false })
+    if (isWarningDialogShow)
+        WarningDialog { isWarningDialogShow = false }
+    if (appState.isRetryDialogShow)
         RetryDialog(
             retryInstall = {
                 coroutineScope.launch {
@@ -87,7 +91,7 @@ fun MainScreen(mainViewModel: MainViewModel) {
                     actions = {
                         ToolbarMenu(
                             openAboutDialog = {
-                                aboutDialogShow = true
+                                isAboutDialogShow = true
                             }
                         )
                     }
@@ -110,8 +114,8 @@ fun MainScreen(mainViewModel: MainViewModel) {
             item {
                 ExecuteCard(
                     onButtonClick = { mainViewModel.fetchInfomation(context) },
-                    crackChipChecked = appState.crackPatchChecked,
-                    translationChipChecked = appState.translationChecked,
+                    crackChipChecked = appState.isCrackPatchChecked,
+                    translationChipChecked = appState.isTranslationChecked,
                     toggleCrackPatch = { mainViewModel.toggleCrackPatch() },
                     toggleTranslation = { mainViewModel.toggleTranslation() },
                     isTaskRunning = appState.isTaskRunning
@@ -312,6 +316,23 @@ fun RetryDialog(
         },
         text = {
             Text(stringResource(R.string.retry_msg))
+        }
+    )
+}
+@Composable
+fun WarningDialog(closeDialog: () -> Unit) {
+    AlertDialog(
+        title = {
+            Text(stringResource(R.string.warning_dialog_title))
+        },
+        onDismissRequest = {},
+        confirmButton = {
+            TextButton(onClick = {
+                closeDialog()
+            }) { Text(stringResource(R.string.ok)) }
+        },
+        text = {
+            Text(stringResource(R.string.warning_dialog_msg))
         }
     )
 }

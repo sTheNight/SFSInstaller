@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import androidx.compose.ui.res.stringResource
 import androidx.core.content.FileProvider
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -38,8 +37,9 @@ class MainViewModel(
 ) : ViewModel() {
     private val _appState = MutableStateFlow(
         AppState(
-            crackPatchChecked = state["crackPatch"] ?: true,
-            translationChecked = state["translation"] ?: true,
+            isCrackPatchChecked = state["isCrackPatchChecked"] ?: true,
+            isTranslationChecked = state["isTranslationChecked"] ?: true,
+            isRetryDialogShow = state["isRetryDialogShow"] ?: false,
             infoList = state["infoList"] ?: emptyList(),
             remoteInfoData = null
         )
@@ -64,7 +64,7 @@ class MainViewModel(
     fun toggleCrackPatch() {
         _appState.update {
             it.copy(
-                crackPatchChecked = !it.crackPatchChecked
+                isCrackPatchChecked = !it.isCrackPatchChecked
             )
         }
     }
@@ -80,7 +80,7 @@ class MainViewModel(
     fun closeRetryDialog() {
         _appState.update {
             it.copy(
-                retryDialogShow = false
+                isRetryDialogShow = false
             )
         }
     }
@@ -88,14 +88,14 @@ class MainViewModel(
     fun openRetryDialog() {
         _appState.update {
             it.copy(
-                retryDialogShow = true
+                isRetryDialogShow = true
             )
         }
     }
 
     fun toggleTranslation() {
         _appState.update {
-            it.copy(translationChecked = !it.translationChecked)
+            it.copy(isTranslationChecked = !it.isTranslationChecked)
         }
     }
 
@@ -120,7 +120,7 @@ class MainViewModel(
                         context.getExternalFilesDir(null)?.absolutePath?.toPath()
                     val dataDirPath = context.dataDir.absolutePath.toPath()
 
-                    if (appState.value.translationChecked && remoteFile.translation != null) {
+                    if (appState.value.isTranslationChecked && remoteFile.translation != null) {
                         val translationDir =
                             externalFileDirPath?.div("Custom Translations") ?: run {
                                 throw IllegalStateException(context.getString(R.string.get_cutsom_translation_fold_failed))
@@ -138,7 +138,7 @@ class MainViewModel(
                         tasks.add(translationTask)
                     }
 
-                    if (appState.value.crackPatchChecked && remoteFile.modPatch != null) {
+                    if (appState.value.isCrackPatchChecked && remoteFile.modPatch != null) {
                         val modPatchDir = dataDirPath.div("shared_prefs")
                         val modPatchPath: Path = modPatchDir / "${remoteFile.modPatch.name}"
 
@@ -152,9 +152,19 @@ class MainViewModel(
                         }
                         tasks.add(modPatchTask)
                     }
+
+                    if (!appState.value.isCrackPatchChecked && !appState.value.isTranslationChecked) {
+                        appendInfoText(
+                            context.getString(R.string.no_installation_options_checked),
+                            level = InfoLevel.LEVEL_WARNING
+                        )
+                        delay(1000L)
+                    }
+
                     val releaseApkTask = async {
                         releaseApkFile(context)
                     }
+
                     tasks.add(releaseApkTask)
                     val results = tasks.awaitAll()
                     if (results.all { it }) {
@@ -276,8 +286,11 @@ class MainViewModel(
         closeRetryDialog()
         if (!context.packageManager.canRequestPackageInstalls()) {
             openRetryDialog()
-            appendInfoText(context.getString(R.string.failed_to_install_no_permission), InfoLevel.LEVEL_WARNING)
-            delay(1000L)
+            appendInfoText(
+                context.getString(R.string.failed_to_install_no_permission),
+                InfoLevel.LEVEL_WARNING
+            )
+            delay(500L)
             val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
                 .setData(Uri.parse("package:${context.packageName}"))
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -309,9 +322,9 @@ class MainViewModel(
 
 data class AppState(
     val infoList: List<InfoMsg> = emptyList(),
-    val crackPatchChecked: Boolean = true,
+    val isCrackPatchChecked: Boolean = true,
     val isTaskRunning: Boolean = false,
-    val translationChecked: Boolean = true,
-    val retryDialogShow: Boolean = false,
+    val isTranslationChecked: Boolean = true,
+    val isRetryDialogShow: Boolean = false,
     val remoteInfoData: RemoteFile? = null
 )

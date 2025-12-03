@@ -31,4 +31,7 @@ Assisted by <b><a href="https://youfeng11.github.io/">@youfeng11</a></b>]]></str
     <string name="file_apk"> Game APK </string>
     <string name="failed_to_install_no_permission">Cannot install unknown apps. Please grant permission and try again.</string>
     <string name="try_to_install">Attempting to launch installer</string>
+    <string name="warning_dialog_title">Warning</string>
+    <string name="warning_dialog_msg">If you experience issues such as the map not opening or a black screen after using this installer, please try clearing the cache and restarting the game. If the problem persists, please discontinue use of this installer.\n\nThis application is for learning purposes only. Please support the official version!</string>
+    <string name="no_installation_options_checked">No installation options were selected. The original game version will be installed.</string>
 </resources>
