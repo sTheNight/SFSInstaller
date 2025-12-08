@@ -85,6 +85,9 @@ fun MainScreen(mainViewModel: MainViewModel) {
             },
             closeDialog = {
                 mainViewModel.closeRetryDialog()
+            },
+            grandPermission = {
+                mainViewModel.grantAppInstallPermission(context)
             }
         )
     Scaffold(

@@ -40,6 +40,7 @@ class MainViewModel(
     state: SavedStateHandle
 ) : ViewModel() {
     private val _appState = MutableStateFlow(
+        // 配置半持久化存储，也许应该叫半持久化吧我也不知道该叫啥
         AppState(
             isCrackPatchChecked = state["isCrackPatchChecked"] ?: true,
             isTranslationChecked = state["isTranslationChecked"] ?: true,
@@ -56,7 +57,6 @@ class MainViewModel(
             )
         }
     }
-
     fun clearInfoText() {
         _appState.update {
             it.copy(
@@ -64,7 +64,6 @@ class MainViewModel(
             )
         }
     }
-
     fun toggleCrackPatch() {
         _appState.update {
             it.copy(
@@ -72,15 +71,18 @@ class MainViewModel(
             )
         }
     }
+    fun toggleTranslation() {
+        _appState.update {
+            it.copy(isTranslationChecked = !it.isTranslationChecked)
+        }
+    }
 
     private fun setTaskRunningTrue() {
         _appState.update { it.copy(isTaskRunning = true) }
     }
-
     private fun setTaskRunningFalse() {
         _appState.update { it.copy(isTaskRunning = false) }
     }
-
     fun closeRetryDialog() {
         _appState.update {
             it.copy(
@@ -88,7 +90,6 @@ class MainViewModel(
             )
         }
     }
-
     fun openRetryDialog() {
         _appState.update {
             it.copy(
@@ -97,12 +98,9 @@ class MainViewModel(
         }
     }
 
-    fun toggleTranslation() {
-        _appState.update {
-            it.copy(isTranslationChecked = !it.isTranslationChecked)
-        }
-    }
-
+    /**
+     * 用于从 API 中获取信息的方法，此方法与其他方法高度耦合
+     */
     fun fetchInfomation(context: Context) {
         viewModelScope.launch {
             try {
@@ -113,14 +111,11 @@ class MainViewModel(
 
                 if (data.isNotEmpty()) {
                     appendInfoText(context.getString(R.string.success_get_data))
-
                     val remoteFile = Json.decodeFromString<RemoteFile>(data)
                     _appState.update { it.copy(remoteInfoData = remoteFile) }
-
                     val externalFileDirPath =
                         context.getExternalFilesDir(null)?.absolutePath?.toPath()
                     val dataDirPath = context.dataDir.absolutePath.toPath()
-
                     if (remoteFile.compatibleVersion != Constant.COMPATIBLE_VERSION)
                         appendInfoText(context.getString(R.string.version_not_compatible))
 
@@ -147,9 +142,10 @@ class MainViewModel(
                     }
 
                     if (appState.value.isCrackPatchChecked) {
-                        val modPatchDir = dataDirPath.div("shared_prefs")
+                        val modPatchDir = dataDirPath?.div("shared_prefs") ?: run {
+                            throw IllegalStateException(context.getString(R.string.get_modpatch_fold_failed))
+                        }
                         val modPatchPath: Path = modPatchDir / remoteFile.modPatch.name
-
                         val modPatchTask = async {
                             releaseFile(
                                 fileInfo = remoteFile.modPatch,
@@ -168,16 +164,16 @@ class MainViewModel(
                         )
                         delay(1000L)
                     }
-
                     val releaseApkTask = async {
                         releaseApkFile(context)
                     }
-
                     tasks.add(releaseApkTask)
+
                     val results = tasks.awaitAll()
                     if (results.all { it }) {
                         appendInfoText(context.getString(R.string.all_task_completed))
                     } else {
+                        // 利用抛出做到同时输出错误信息和阻断后续代码执行的效果
                         throw IOException(context.getString(R.string.task_failed))
                     }
                     installApk(context)
@@ -190,6 +186,14 @@ class MainViewModel(
         }
     }
 
+    /**
+     * 依据 FileInfo 的内容从网络中获取并释放文件
+     *
+     * @param fileInfo 信息源对象
+     * @param displayName 文件的名称
+     * @param destPath 释放的目标路径
+     * @param context Android Context 对象，用于从 string.xml 中获取字符串
+     */
     suspend fun releaseFile(
         fileInfo: FileInfo,
         displayName: String,
@@ -259,6 +263,9 @@ class MainViewModel(
         }
     }
 
+    /**
+     * 释放汉化包选择文件
+     */
     fun releaseTranslationSelectionFile(
         fileInfo: FileInfo,
         context: Context
@@ -290,6 +297,9 @@ class MainViewModel(
         }
     }
 
+    /**
+     * 释放游戏安装包
+     */
     fun releaseApkFile(context: Context): Boolean {
         return try {
             appendInfoText(
@@ -341,6 +351,9 @@ class MainViewModel(
         }
     }
 
+    /**
+     * 安装游戏
+     */
     suspend fun installApk(context: Context) {
         closeRetryDialog()
         if (!context.packageManager.canRequestPackageInstalls()) {
@@ -349,11 +362,6 @@ class MainViewModel(
                 context.getString(R.string.failed_to_install_no_permission),
                 InfoLevel.LEVEL_WARNING
             )
-            delay(500L)
-            val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
-                .setData(Uri.parse("package:${context.packageName}"))
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(intent)
         } else {
             val cacheDirPath = context.externalCacheDir?.absolutePath ?: run {
                 val fallbackDir = context.filesDir.resolve("apk_cache")
@@ -376,6 +384,12 @@ class MainViewModel(
             context.startActivity(installIntent)
             appendInfoText(context.getString(R.string.try_to_install))
         }
+    }
+    fun grantAppInstallPermission(context: Context) {
+        val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
+            .setData(Uri.parse("package:${context.packageName}"))
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
     }
 }
 

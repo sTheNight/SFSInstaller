@@ -2,10 +2,12 @@
 <resources>
     <string name="app_name">SFS安装器</string>
     <string name="ok">确认</string>
-    <string name="retry">重试</string>
     <string name="cancle">取消</string>
+    <string name="retry">重试</string>
     <string name="test_helloworld">Hello World</string>
-    <string name="retry_msg">你需要授予安装未知应用权限，否则无法继续下一步操作</string>
+    <string name="grant">授予权限</string>
+    <string name="no_permission_dialog_title">未授予安装未知应用权限</string>
+    <string name="retry_msg">你需要授予安装未知应用权限，否则无法执行下一步操作</string>
     <string name="mod_patch">破解补丁</string>
     <string name="translation">汉化包</string>
     <string name="network_required_tips">请确保你有良好的网络连接</string>
@@ -20,6 +22,7 @@
 在 <b><a href="https://qm.qq.com/q/gf5BCQXqTu">QQ 群</a></b> 获取更新<br/>
 由 <b><a href="https://youfeng11.github.io/">由风</a></b> 提供帮助]]></string>
     <string name="get_cutsom_translation_fold_failed">获取 Custom Translations 目录失败</string>
+    <string name="get_modpatch_fold_failed">获取补丁存放目录失败</string>
     <string name="success_get_data">获取数据成功</string>
     <string name="all_task_completed">所有任务均已完成</string>
     <string name="task_failed">任务执行失败</string>

@@ -12,25 +12,29 @@ import com.example.sfsinstaller.R
 @Composable
 fun RetryDialog(
     closeDialog: () -> Unit,
-    retryInstall: () -> Unit
+    retryInstall: () -> Unit,
+    grandPermission: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = {  },
         title = {
-            Text(stringResource(R.string.retry))
+            Text(stringResource(R.string.no_permission_dialog_title))
         },
         confirmButton = {
-            TextButton(onClick = { retryInstall() }) {
-                Text(stringResource(R.string.retry))
+            TextButton(onClick = { grandPermission() }) {
+                Text(stringResource(R.string.grant))
             }
         },
         dismissButton = {
+            TextButton(onClick = {retryInstall()}) {
+                Text(stringResource(R.string.retry))
+            }
             TextButton(onClick = { closeDialog() }) {
                 Text(stringResource(R.string.cancle))
             }
         },
         text = {
             Text(stringResource(R.string.retry_msg))
-        }
+        },
     )
 }
