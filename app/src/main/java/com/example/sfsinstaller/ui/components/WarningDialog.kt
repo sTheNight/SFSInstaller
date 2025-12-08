@@ -20,7 +20,7 @@ fun WarningDialog(closeDialog: () -> Unit) {
             }) { Text(stringResource(R.string.ok)) }
         },
         text = {
-            Text(stringResource(R.string.warning_dialog_msg))
+            HtmlText(htmlText = stringResource(R.string.warning_dialog_msg))
         }
     )
 }

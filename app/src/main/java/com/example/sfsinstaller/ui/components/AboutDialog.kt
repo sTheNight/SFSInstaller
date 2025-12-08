@@ -60,7 +60,7 @@ fun AboutDialog(closeDialog: () -> Unit) {
                         )
                         SelectionContainer {
                             Text(
-                                text = "${BuildConfig.VERSION_NAME}",
+                                text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
                                 color = MaterialTheme.colorScheme.onSurface,
                                 style = MaterialTheme.typography.bodySmall,
                                 fontSize = 14.sp
@@ -68,24 +68,7 @@ fun AboutDialog(closeDialog: () -> Unit) {
                         }
 
                         Spacer(modifier = Modifier.height(8.dp))
-                        val aboutInfoText = AnnotatedString.fromHtml(
-                            htmlString = stringResource(R.string.info_text_html),
-                            linkStyles = TextLinkStyles(
-                                style = SpanStyle(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    textDecoration = TextDecoration.Underline
-                                ),
-                                pressedStyle = SpanStyle(
-                                    background = MaterialTheme.colorScheme.primaryContainer
-                                )
-                            )
-                        )
-                        Text(
-                            text = aboutInfoText,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            style = MaterialTheme.typography.bodySmall,
-                            fontSize = 14.sp,
-                        )
+                        HtmlText(htmlText = stringResource(R.string.info_text_html))
                     }
                 }
             }

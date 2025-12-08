@@ -86,7 +86,7 @@ fun MainScreen(mainViewModel: MainViewModel) {
             closeDialog = {
                 mainViewModel.closeRetryDialog()
             },
-            grandPermission = {
+            grantPermission = {
                 mainViewModel.grantAppInstallPermission(context)
             }
         )
