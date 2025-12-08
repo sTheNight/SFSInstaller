@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -19,14 +21,16 @@ android {
         versionName = "1.5.10.6-9-compose2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        defaultConfig.ndk.abiFilters("arm64-v8a","armeabi-v7a")
     }
 
     buildTypes {
         debug {
-            buildConfigField("Boolean","IS_DEBUG","true")
+            buildConfigField("Boolean", "IS_DEBUG", "true")
         }
         release {
-            buildConfigField("Boolean","IS_DEBUG","false")
+            buildConfigField("Boolean", "IS_DEBUG", "false")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -35,13 +39,16 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
+
+    kotlin {
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
     }
+
     buildFeatures {
         compose = true
         android.buildFeatures.buildConfig = true
