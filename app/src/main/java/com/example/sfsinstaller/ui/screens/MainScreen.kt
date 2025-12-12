@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material3.Badge
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,6 +48,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.sfsinstaller.BuildConfig
 import com.example.sfsinstaller.R
 import com.example.sfsinstaller.models.InfoLevel
 import com.example.sfsinstaller.models.InfoMsg
@@ -98,7 +100,11 @@ fun MainScreen(mainViewModel: MainViewModel) {
             ) {
                 TopAppBar(
                     title = {
-                        Text(context.getString(R.string.app_name))
+                        Row() {
+                            Text(context.getString(R.string.app_name))
+                            if (BuildConfig.IS_DEBUG)
+                                Badge { Text("Debug") }
+                        }
                     },
                     actions = {
                         ToolbarMenu(
