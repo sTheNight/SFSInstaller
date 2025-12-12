@@ -13,6 +13,7 @@ android {
         version = release(36)
     }
 
+
     defaultConfig {
         applicationId = "com.StefMorojna.SpaceflightSimulator"
         minSdk = 29
@@ -25,6 +26,14 @@ android {
         defaultConfig.ndk.abiFilters("arm64-v8a","armeabi-v7a")
     }
 
+    signingConfigs {
+        create("release") {
+            enableV1Signing = true
+            enableV2Signing = true
+            enableV3Signing = true
+        }
+    }
+
     buildTypes {
         debug {
             buildConfigField("Boolean", "IS_DEBUG", "true")
@@ -33,6 +42,7 @@ android {
             buildConfigField("Boolean", "IS_DEBUG", "false")
             isMinifyEnabled = true
             isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
