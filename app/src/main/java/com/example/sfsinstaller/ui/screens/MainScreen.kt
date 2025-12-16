@@ -271,8 +271,9 @@ fun InfoCard(
     ) {
         Box() {
             IconButton(
-                modifier = Modifier.align(Alignment.TopEnd)
-                                .animateContentSize(),
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .animateContentSize(),
                 onClick = {
                     closeButtoClick()
                 }

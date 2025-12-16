@@ -24,7 +24,7 @@ import com.example.sfsinstaller.utils.openUri
 
 @Composable
 fun ToolbarMenu(
-    openAboutDialog : () -> Unit
+    openAboutDialog: () -> Unit
 ) {
     val context = LocalContext.current
     Row(
@@ -50,7 +50,7 @@ fun ToolbarMenu(
         }
 
         IconButton(onClick = {
-            openUri(context,"https://github.com/sTheNight/SFSInstaller")
+            openUri(context, "https://github.com/sTheNight/SFSInstaller")
         }) {
             Icon(
                 painter = painterResource(R.drawable.github),
