@@ -99,12 +99,8 @@ fun MainScreen(mainViewModel: MainViewModel) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 TopAppBar(
-                    title = {
-                        Row() {
-                            Text(context.getString(R.string.app_name))
-                            if (BuildConfig.IS_DEBUG)
-                                Badge { Text("Debug") }
-                        }
+                    {
+                        Text(context.getString(R.string.app_name))
                     },
                     actions = {
                         ToolbarMenu(
@@ -271,13 +267,12 @@ fun InfoCard(
     closeButtoClick: () -> Unit
 ) {
     OutlinedCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .animateContentSize()
+        modifier = Modifier.fillMaxWidth()
     ) {
         Box() {
             IconButton(
-                modifier = Modifier.align(Alignment.TopEnd),
+                modifier = Modifier.align(Alignment.TopEnd)
+                                .animateContentSize(),
                 onClick = {
                     closeButtoClick()
                 }
