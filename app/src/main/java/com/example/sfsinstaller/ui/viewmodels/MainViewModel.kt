@@ -113,15 +113,15 @@ class MainViewModel(
                     appendInfoText(context.getString(R.string.success_get_data))
                     val remoteFile = Json.decodeFromString<RemoteFile>(data)
                     _appState.update { it.copy(remoteInfoData = remoteFile) }
-                    val externalFileDirPath =
-                        context.getExternalFilesDir(null)?.absolutePath?.toPath()
+                    val mediaFilePath = context.externalMediaDirs[0]?.absolutePath?.toPath()
                     val dataDirPath = context.dataDir.absolutePath.toPath()
                     if (remoteFile.compatibleVersion != Constant.COMPATIBLE_VERSION)
-                        appendInfoText(context.getString(R.string.version_not_compatible))
+                        appendInfoText(context.getString(R.string.version_not_compatible),
+                            InfoLevel.LEVEL_WARNING)
 
                     if (appState.value.isTranslationChecked) {
                         val translationDir =
-                            externalFileDirPath?.div("Custom Translations") ?: run {
+                            mediaFilePath?.div("Custom Translations") ?: run {
                                 throw IllegalStateException(context.getString(R.string.get_cutsom_translation_fold_failed))
                             }
                         val translationPath: Path =
@@ -134,11 +134,13 @@ class MainViewModel(
                                 context = context
                             )
                         }
-                        val releaseTranslationSelectionFile = async {
-                            releaseTranslationSelectionFile(remoteFile.translation,context)
+                        if (remoteFile.translation.useable) {
+                            val releaseTranslationSelectionFile = async {
+                                releaseTranslationSelectionFile(remoteFile.translation, context)
+                            }
+                            tasks.add(releaseTranslationSelectionFile)
                         }
                         tasks.add(translationTask)
-                        tasks.add(releaseTranslationSelectionFile)
                     }
 
                     if (appState.value.isCrackPatchChecked) {
@@ -173,8 +175,8 @@ class MainViewModel(
                     if (results.all { it }) {
                         appendInfoText(context.getString(R.string.all_task_completed))
                     } else {
-                        // 利用抛出做到同时输出错误信息和阻断后续代码执行的效果
-                        throw IOException(context.getString(R.string.task_failed))
+                        appendInfoText("有任务执行失败", InfoLevel.LEVEL_ERROR)
+                        delay(1000L)
                     }
                     installApk(context)
                     setTaskRunningFalse()
@@ -271,9 +273,8 @@ class MainViewModel(
         context: Context
     ) : Boolean {
         return try {
-            val externalFileDirPath =
-                context.getExternalFilesDir(null)?.absolutePath?.toPath()
-            val translationSelectionFile = externalFileDirPath?.div("Saving")?.div("Settings")?.div("LanguageSettings_2.txt") as Path
+            val mediaFilePath = context.externalMediaDirs[0]?.absolutePath?.toPath()
+            val translationSelectionFile = mediaFilePath?.div("Saving")?.div("Settings")?.div("LanguageSettings_2.txt") as Path
             val parentPath = translationSelectionFile?.parent
             if (parentPath!=null && !FileSystem.SYSTEM.exists(parentPath))
                 FileSystem.SYSTEM.createDirectories(parentPath)
@@ -281,7 +282,7 @@ class MainViewModel(
             val json = Json { prettyPrint = true }
             val content = json.encodeToString(
                 buildJsonObject {
-                    put("name", fileInfo.name.substringBeforeLast('.'))
+                    put("codeName", fileInfo.name.substringBeforeLast('.'))
                     put("custom", true)
                 }
             )
