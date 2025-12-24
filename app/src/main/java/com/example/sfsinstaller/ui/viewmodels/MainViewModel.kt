@@ -218,36 +218,38 @@ class MainViewModel(
             appendInfoText(context.getString(R.string.file_releasing, displayName))
 
             val network = Network()
-            val bytes = network.fetchDataAsBytes(fileURL)
 
-            val parentDir = destPath.parent
-            if (parentDir != null && !FileSystem.SYSTEM.exists(parentDir)) {
-                FileSystem.SYSTEM.createDirectories(parentDir)
-            }
+            network.fetchDataAsSource(fileInfo.link).use { networkSource ->
 
-            val fileSink = FileSystem.SYSTEM.sink(destPath).buffer()
-
-            val hashingSink = HashingSink.sha256(fileSink)
-
-            hashingSink.buffer().use { sink ->
-                sink.write(bytes)
-            }
-
-            if (fileInfo.hash.isNotEmpty()) {
-                val calculatedHash = hashingSink.hash.hex()
-                val expectedHash = fileInfo.hash
-
-                if (!calculatedHash.equals(expectedHash, ignoreCase = true)) {
-                    appendInfoText(
-                        context.getString(
-                            R.string.file_hash_mismatch,
-                            displayName,
-                            calculatedHash
-                        ), InfoLevel.LEVEL_WARNING
-                    )
+                destPath.parent?.let { parentDir ->
+                    if (!FileSystem.SYSTEM.exists(parentDir)) {
+                        FileSystem.SYSTEM.createDirectories(parentDir)
+                    }
                 }
-            } else {
-                appendInfoText(context.getString(R.string.file_hash_missing, displayName))
+
+                val fileSink = FileSystem.SYSTEM.sink(destPath).buffer()
+                val hashingSink = HashingSink.sha256(fileSink)
+
+                hashingSink.buffer().use { sink ->
+                    sink.writeAll(networkSource)
+                }
+
+                if (fileInfo.hash.isNotEmpty()) {
+                    val calculatedHash = hashingSink.hash.hex()
+                    val expectedHash = fileInfo.hash
+
+                    if (!calculatedHash.equals(expectedHash, ignoreCase = true)) {
+                        appendInfoText(
+                            context.getString(
+                                R.string.file_hash_mismatch,
+                                displayName,
+                                calculatedHash
+                            ), InfoLevel.LEVEL_WARNING
+                        )
+                    }
+                } else {
+                    appendInfoText(context.getString(R.string.file_hash_missing, displayName))
+                }
             }
 
             appendInfoText(context.getString(R.string.file_released, displayName))
@@ -288,7 +290,7 @@ class MainViewModel(
             )
 
             FileSystem.SYSTEM.sink(translationSelectionFile).buffer().use { sink ->
-                sink.write(content.toByteArray())
+                sink.writeUtf8(content)
             }
 
             true
