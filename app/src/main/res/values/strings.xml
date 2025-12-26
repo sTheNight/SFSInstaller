@@ -19,7 +19,7 @@
 
     <string name="releasing_translation">正在释放汉化包</string>
     <string name="translation_unavailable">汉化包暂不可用</string>
-    <string name="translation_version_mismatch">汉化包适配版本与当前版本不匹配</string>
+    <string name="translation_version_mismatch"><![CDATA[汉化包适配版本与当前版本不匹配，请尝试前往 <b><a href="https://github.com/sTheNight/SFSInstaller">Github 仓库</a></b> 获取更新]]></string>
     <string name="translation_release_success">汉化包释放完成</string>
     <string name="translation_release_failed">汉化包释放失败：%1$s</string>
 
