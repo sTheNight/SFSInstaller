@@ -10,7 +10,7 @@
     <string name="start_action">执行</string>
     <string name="install_option">安装选项</string>
     <string name="game_apk">游戏本体</string>
-    <string name="mod_patch">游戏补丁</string>
+    <string name="mod_patch">破解补丁</string>
     <string name="translation">汉化包</string>
 
     <string name="action_translation_selected">汉化包：%1$s</string>
