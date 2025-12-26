@@ -36,7 +36,7 @@ fun RetryDialog(
         },
         dismissButton = {
             TextButton(onClick = { closeDialog() }) {
-                Text(stringResource(R.string.cancle))
+                Text(stringResource(R.string.cancel))
             }
         },
         text = {

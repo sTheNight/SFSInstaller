@@ -9,18 +9,36 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.sfsinstaller.ui.screens.ActionScreen
 import com.example.sfsinstaller.ui.viewmodels.MainViewModel
 import com.example.sfsinstaller.ui.screens.MainScreen
+import com.example.sfsinstaller.ui.viewmodels.ActionOptionStore
+import com.example.sfsinstaller.ui.viewmodels.ActionViewModel
 
 @Composable
 fun MainNavigation(
     navHostController: NavHostController = rememberNavController()
 ) {
     val mainViewModel: MainViewModel = viewModel()
+    val actionOptionStore: ActionOptionStore = viewModel()
+    val actionViewModel = ActionViewModel(actionOptionStore = actionOptionStore)
     Box() {
         NavHost(modifier = Modifier.fillMaxSize(), navController = navHostController, startDestination = "main") {
             composable("main") {
-                MainScreen(mainViewModel)
+                MainScreen(
+                    mainViewModel = mainViewModel,
+                    actionOptionStore = actionOptionStore,
+                    switchToActionScreen = {
+                        navHostController.navigate("action")
+                    })
+            }
+            composable("action") {
+                ActionScreen(
+                    actionViewModel = actionViewModel,
+                    back = {
+                        navHostController.popBackStack()
+                    }
+                )
             }
         }
     }
