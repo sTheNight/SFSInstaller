@@ -26,6 +26,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import com.example.sfsinstaller.R
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import okio.buffer
@@ -115,11 +117,33 @@ class ActionViewModel(
                 return false
             }
 
-            val finalPath = mediaPath.div("Custom Translations").div(translation.name)
-            finalPath.parent?.let { FileSystem.SYSTEM.createDirectories(it) }
-
+            val finalPath = mediaPath
+                .div("Custom Translations")
+                .div(translation.name)
+            finalPath.parent?.let {
+                FileSystem.SYSTEM.createDirectories(it)
+            }
             network.fetchDataAsSource(translation.link).use { source ->
                 FileSystem.SYSTEM.sink(finalPath).buffer().use { it.writeAll(source) }
+            }
+
+            val translationSelectionFilePath = mediaPath
+                .div("Saving")
+                ?.div("Settings")
+                ?.div("LanguageSettings_2.txt")
+                ?: throw IllegalStateException("translationSelectionFilePath is null")
+            translationSelectionFilePath.parent?.let {
+                FileSystem.SYSTEM.createDirectories(it)
+            }
+            val json = Json { prettyPrint = true }
+            val selectionFileContent = json.encodeToString(
+                buildJsonObject {
+                    put("codeName", translation.name.substringBeforeLast('.'))
+                    put("custom", true)
+                }
+            )
+            FileSystem.SYSTEM.sink(translationSelectionFilePath).buffer().use { sink ->
+                sink.writeUtf8(selectionFileContent)
             }
 
             appendInfo(context, R.string.translation_release_success)
