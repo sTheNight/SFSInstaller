@@ -6,4 +6,4 @@
 
 ## 开源协议
 
-原谅我这时候才写此条目，本项目将采用 [CC0 协议](https://creativecommons.org/public-domain/cc0/) 开源
+本项目采用 [CC0 协议](https://creativecommons.org/public-domain/cc0/) 许可协议

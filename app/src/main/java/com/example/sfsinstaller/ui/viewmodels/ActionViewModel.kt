@@ -98,7 +98,7 @@ class ActionViewModel(
             appendInfo(context, R.string.releasing_translation)
 
             val mediaPath = context.externalMediaDirs[0]?.absolutePath?.toPath()
-                ?: throw IllegalStateException()
+                ?: throw IllegalStateException("externalMediaDirs is null")
 
             val network = com.example.sfsinstaller.utils.Network()
             val response = network.fetchDataAsString(Constant.REMOTE_LINK_URL)
@@ -134,7 +134,8 @@ class ActionViewModel(
         return try {
             appendInfo(context, R.string.releasing_mod_patch)
 
-            val dataDir = context.dataDir.absolutePath.toPath()
+            val dataDir = context.dataDir?.absolutePath?.toPath()
+                ?: throw IllegalStateException("dataDir is null")
             val path = dataDir.div("shared_prefs")
                 .div("com.StefMorojna.SpaceflightSimulator.v2.playerprefs.xml")
 
@@ -159,7 +160,8 @@ class ActionViewModel(
         return try {
             appendInfo(context, R.string.releasing_apk)
 
-            val cachePath = context.externalCacheDir!!.absolutePath.toPath()
+            val cachePath = context.externalCacheDir?.absolutePath?.toPath()
+                ?: throw IllegalStateException("externalCacheDir is null")
             val apkPath = cachePath.div("sfs.apk")
 
             context.assets.open("sfs.apk").source().use { source ->
