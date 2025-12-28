@@ -2,7 +2,6 @@ package com.example.sfsinstaller.ui.viewmodels
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.provider.Settings
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +32,7 @@ import okio.Path.Companion.toPath
 import okio.buffer
 import okio.source
 import java.io.File
+import androidx.core.net.toUri
 
 class ActionViewModel(
     private val actionOptionStore: ActionOptionStore
@@ -56,7 +56,12 @@ class ActionViewModel(
         infoText = ""
     }
 
-    private fun appendInfo(context: Context, resId: Int, isWarning: Boolean = false, vararg args: Any?) {
+    private fun appendInfo(
+        context: Context,
+        resId: Int,
+        isWarning: Boolean = false,
+        vararg args: Any?
+    ) {
         val text = context.getString(resId, *args)
         infoText += if (isWarning)
             "<font color='red'>$text</font><br/>"
@@ -69,7 +74,12 @@ class ActionViewModel(
             delay(1000L)
             val state = actionOptionStore.actionOptionState.first()
 
-            appendInfo(context, R.string.action_translation_selected, false, state.isTranslationSelected)
+            appendInfo(
+                context,
+                R.string.action_translation_selected,
+                false,
+                state.isTranslationSelected
+            )
             appendInfo(context, R.string.action_mod_patch_selected, false, state.isModPatchSelected)
             appendInfo(context, R.string.action_divider)
 
@@ -129,16 +139,18 @@ class ActionViewModel(
 
             val translationSelectionFilePath = mediaPath
                 .div("Saving")
-                ?.div("Settings")
-                ?.div("LanguageSettings_2.txt")
-                ?: throw IllegalStateException("translationSelectionFilePath is null")
+                .div("Settings")
+                .div("LanguageSettings_2.txt")
             translationSelectionFilePath.parent?.let {
                 FileSystem.SYSTEM.createDirectories(it)
             }
             val json = Json { prettyPrint = true }
             val selectionFileContent = json.encodeToString(
                 buildJsonObject {
-                    put("codeName", translation.name.substringBeforeLast('.'))
+                    put(
+                        "codeName",
+                        translation.name.substringBeforeLast('.')
+                    )
                     put("custom", true)
                 }
             )
@@ -149,7 +161,12 @@ class ActionViewModel(
             appendInfo(context, R.string.translation_release_success)
             true
         } catch (e: Exception) {
-            appendInfo(context, R.string.translation_release_failed, true, e.message ?: "")
+            appendInfo(
+                context,
+                R.string.translation_release_failed,
+                true,
+                e.message ?: "Unknown"
+            )
             false
         }
     }
@@ -172,7 +189,12 @@ class ActionViewModel(
             appendInfo(context, R.string.mod_patch_release_success)
             true
         } catch (e: java.io.IOException) {
-            appendInfo(context, R.string.mod_patch_open_failed, true)
+            appendInfo(
+                context,
+                R.string.mod_patch_open_failed,
+                true,
+                e.message ?: "Unknown"
+            )
             false
         } catch (e: Exception) {
             appendInfo(context, R.string.mod_patch_release_failed, true, e.message ?: "")
@@ -189,16 +211,28 @@ class ActionViewModel(
             val apkPath = cachePath.div("sfs.apk")
 
             context.assets.open("sfs.apk").source().use { source ->
-                FileSystem.SYSTEM.sink(apkPath).buffer().use { it.writeAll(source) }
+                FileSystem.SYSTEM.sink(apkPath).buffer().use {
+                    it.writeAll(source)
+                }
             }
 
             appendInfo(context, R.string.apk_release_success)
             true
         } catch (e: java.io.IOException) {
-            appendInfo(context, R.string.apk_open_failed, true)
+            appendInfo(
+                context,
+                R.string.apk_open_failed,
+                true,
+                e.message ?: "Unknown"
+            )
             false
         } catch (e: Exception) {
-            appendInfo(context, R.string.apk_release_failed, true, e.message ?: "")
+            appendInfo(
+                context,
+                R.string.apk_release_failed,
+                true,
+                e.message ?: "Unknown"
+            )
             false
         }
     }
@@ -231,18 +265,23 @@ class ActionViewModel(
             context.startActivity(intent)
             appendInfo(context, R.string.launch_installer)
         } catch (e: Exception) {
-            appendInfo(context, R.string.launch_installer_failed, true, e.message ?: "")
+            appendInfo(context, R.string.launch_installer_failed, true, e.message ?: "Unknown")
         }
     }
 
     fun grantPermission(context: Context) {
         try {
-            val uri = Uri.parse("package:${context.packageName}")
+            val uri = "package:${context.packageName}".toUri()
             val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, uri)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
         } catch (e: Exception) {
-            appendInfo(context, R.string.open_permission_settings_failed, true)
+            appendInfo(
+                context,
+                R.string.open_permission_settings_failed,
+                true,
+                e.message ?: "Unknown"
+            )
         }
     }
 }
