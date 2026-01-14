@@ -13,7 +13,7 @@ class ActionOptionStore(
 ): ViewModel() {
     private val _actionOptionState = MutableStateFlow(
         ActionCheckedState(
-            isModPatchSelected = states.get<Boolean>("isModPatchSelected") ?: false,
+            isModPatchSelected = states.get<Boolean>("isModPatchSelected") ?: true,
             isTranslationSelected = states.get<Boolean>("isTranslationSelected") ?: false
         )
     )
