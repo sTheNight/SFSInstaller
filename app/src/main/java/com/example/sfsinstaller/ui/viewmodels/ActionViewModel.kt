@@ -33,8 +33,12 @@ import okio.buffer
 import okio.source
 import java.io.File
 import androidx.core.net.toUri
+import com.example.sfsinstaller.ui.stores.ActionOptionStore
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class ActionViewModel(
+@HiltViewModel
+class ActionViewModel @Inject constructor(
     private val actionOptionStore: ActionOptionStore
 ) : ViewModel() {
 
@@ -74,13 +78,13 @@ class ActionViewModel(
             delay(1000L)
             val state = actionOptionStore.actionOptionState.first()
 
+            appendInfo(context, R.string.action_mod_patch_selected, false, state.isModPatchSelected)
             appendInfo(
                 context,
                 R.string.action_translation_selected,
                 false,
                 state.isTranslationSelected
             )
-            appendInfo(context, R.string.action_mod_patch_selected, false, state.isModPatchSelected)
             appendInfo(context, R.string.action_divider)
 
             val apkResult = withContext(Dispatchers.IO) {

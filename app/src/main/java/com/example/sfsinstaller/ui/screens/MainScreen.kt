@@ -33,19 +33,17 @@ import com.example.sfsinstaller.R
 import com.example.sfsinstaller.ui.components.AboutDialog
 import com.example.sfsinstaller.ui.components.ToolbarMenu
 import com.example.sfsinstaller.ui.components.WarningDialog
-import com.example.sfsinstaller.ui.viewmodels.ActionOptionStore
 import com.example.sfsinstaller.ui.viewmodels.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel,
-    actionOptionStore: ActionOptionStore,
     switchToActionScreen: () -> Unit
 ) {
     var isAboutDialogShow by rememberSaveable { mutableStateOf(false) }
     var isWarningDialogShow by rememberSaveable { mutableStateOf(true) }
-    val state by actionOptionStore.actionOptionState.collectAsState()
+    val state by mainViewModel.actionState.collectAsState()
     if (isAboutDialogShow)
         AboutDialog { isAboutDialogShow = false }
     if(isWarningDialogShow)
@@ -76,8 +74,8 @@ fun MainScreen(
                 MainLayout(
                     isTranslationChecked = state.isTranslationSelected,
                     isModPatchChecked = state.isModPatchSelected,
-                    onTranslationCheckedChange = { actionOptionStore.setTranslationSelected(it) },
-                    onModPatchCheckedChange = { actionOptionStore.setModPatchSelected(it) },
+                    onTranslationCheckedChange = { mainViewModel.setTranslationSelected(it) },
+                    onModPatchCheckedChange = { mainViewModel.setModPatchSelected(it) },
                     switchToActionScreen = { switchToActionScreen() }
                 )
             }
