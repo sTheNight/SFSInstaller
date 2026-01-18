@@ -11,7 +11,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.IconButtonShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.sthenight.sfsinstaller.BuildConfig
 import io.github.sthenight.sfsinstaller.R
-import io.github.sthenight.sfsinstaller.utils.openUri
+import io.github.sthenight.sfsinstaller.utils.OpenUri
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -56,7 +55,7 @@ fun ToolbarMenu(
         IconButton(
             shapes = IconButtonDefaults.shapes(),
             onClick = {
-                openUri(context, "https://github.com/sTheNight/SFSInstaller")
+                OpenUri(context, "https://github.com/sTheNight/SFSInstaller")
             }) {
             Icon(
                 painter = painterResource(R.drawable.github),

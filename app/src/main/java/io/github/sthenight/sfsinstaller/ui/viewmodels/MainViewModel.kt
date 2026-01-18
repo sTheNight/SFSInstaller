@@ -1,7 +1,7 @@
 package io.github.sthenight.sfsinstaller.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
-import io.github.sthenight.sfsinstaller.ui.stores.ActionOptionStore
+import io.github.sthenight.sfsinstaller.stores.ActionOptionStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

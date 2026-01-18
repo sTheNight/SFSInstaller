@@ -3,7 +3,7 @@ package io.github.sthenight.sfsinstaller.utils
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-fun openUri(
+fun OpenUri(
     context: Context,
     uri: String,
     recall: (() -> Unit)? = null
@@ -15,6 +15,8 @@ fun openUri(
     } catch (e: Exception) {
         // something problem here
         // i will fixed it later
+
+        // 他有什么问题来着……？我为什么要修复他
         recall?.invoke()
     }
 }

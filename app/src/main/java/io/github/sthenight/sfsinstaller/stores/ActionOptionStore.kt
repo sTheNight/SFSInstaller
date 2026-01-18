@@ -1,4 +1,4 @@
-package io.github.sthenight.sfsinstaller.ui.stores
+package io.github.sthenight.sfsinstaller.stores
 
 import io.github.sthenight.sfsinstaller.ui.states.ActionCheckedState
 import kotlinx.coroutines.flow.MutableStateFlow

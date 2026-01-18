@@ -13,8 +13,8 @@ import androidx.lifecycle.viewModelScope
 import io.github.sthenight.sfsinstaller.R
 import io.github.sthenight.sfsinstaller.models.ApiFormat
 import io.github.sthenight.sfsinstaller.ui.states.ActionUiState
-import io.github.sthenight.sfsinstaller.ui.stores.ActionOptionStore
-import io.github.sthenight.sfsinstaller.utils.Constant
+import io.github.sthenight.sfsinstaller.stores.ActionOptionStore
+import io.github.sthenight.sfsinstaller.Constant
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
