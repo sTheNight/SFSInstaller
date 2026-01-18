@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.sfsinstaller"
+    namespace = "io.github.sthenight.sfsinstaller"
     compileSdk {
         version = release(36)
     }
