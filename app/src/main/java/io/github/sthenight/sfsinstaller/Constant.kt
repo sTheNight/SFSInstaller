@@ -2,5 +2,5 @@ package io.github.sthenight.sfsinstaller
 
 object Constant {
     const val REMOTE_LINK_URL = "https://sfs-api.izako.cc/api.json"
-    const val COMPATIBLE_VERSION = "1.6.00.7"
+    const val COMPATIBLE_VERSION = "1.6.00.8"
 }
