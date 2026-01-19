@@ -1,6 +1,8 @@
 package io.github.sthenight.sfsinstaller.ui.components
 
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -14,36 +16,22 @@ import io.github.sthenight.sfsinstaller.BuildConfig
 import io.github.sthenight.sfsinstaller.R
 import kotlinx.coroutines.delay
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun WarningDialog(closeDialog: () -> Unit) {
-    var waitSecond by remember { mutableStateOf(5) }
-    var buttonText =
-        if (waitSecond <= 0) stringResource(R.string.ok)
-        else "${stringResource(R.string.ok)}(${waitSecond})"
-
-    LaunchedEffect(Unit) {
-        while (waitSecond > 0) {
-            delay(1000)
-            waitSecond--
-        }
-    }
-
     AlertDialog(
         title = {
             Text(stringResource(R.string.warning_dialog_title))
         },
-        onDismissRequest = {
-            if (BuildConfig.IS_DEBUG)
-                closeDialog()
-        },
+        onDismissRequest = {},
         confirmButton = {
             TextButton(
+                shapes = ButtonDefaults.shapes(),
                 onClick = {
                     closeDialog()
-                },
-                enabled = waitSecond <= 0
+                }
             ) {
-                Text(buttonText)
+                Text(stringResource(R.string.ok))
             }
         },
         text = {
