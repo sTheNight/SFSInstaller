@@ -11,7 +11,7 @@
     <string name="install_option">安装选项</string>
     <string name="game_apk">游戏本体</string>
     <string name="mod_patch">破解补丁</string>
-    <string name="translation">汉化包</string>
+    <string name="translation">汉化包（网络资源）</string>
 
     <string name="action_translation_selected">汉化包：%1$s</string>
     <string name="action_mod_patch_selected">破解补丁：%1$s</string>
@@ -32,6 +32,7 @@
     <string name="apk_release_success">游戏安装包释放成功</string>
     <string name="apk_open_failed">安装包文件打开失败：%1$s</string>
     <string name="apk_release_failed">安装包文件释放失败：%1$s</string>
+    <string name="release_normal_translation">将应用默认语言文件</string>
 
     <string name="apk_install_permission_required">无法安装应用，请授予权限</string>
     <string name="apk_file_not_found">安装包文件不存在</string>
@@ -48,4 +49,7 @@
 
     <string name="warning_dialog_title">警告</string>
     <string name="warning_dialog_msg"><![CDATA[使用此安装器后若出现地图无法打开或进游戏黑屏等影响游戏游玩体验的情况，请尝试清除缓存后重进，若仍无法解决请放弃使用此安装器。<br/><br/>为保证汉化包能够及时更新，本应用的<b>汉化包安装功能依赖网络分发</b>，其他功能均为离线执行，若你有精神洁癖请考虑使用<a href="https://gitee.com/YouFeng11/SFS-Mod">其他安装器</a>。<br/><br/><b>仅供学习使用，请支持正版！！</b>]]></string>
+
+    <string name="translation_install_warning_title">汉化包安装提示</string>
+    <string name="translation_install_warning_content">汉化包资源从网络中获取，若出现网络波动可能会导致安装失败，届时将应用游戏自带简体中文。</string>
 </resources>

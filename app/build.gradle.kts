@@ -21,11 +21,11 @@ android {
         minSdk = 29
         targetSdk = 36
         versionCode = 761
-        versionName = "1.6.00.9-12"
+        versionName = "1.6.00.9-13"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        defaultConfig.ndk.abiFilters("arm64-v8a","armeabi-v7a")
+        defaultConfig.ndk.abiFilters("arm64-v8a", "armeabi-v7a")
     }
 
     signingConfigs {
@@ -59,6 +59,8 @@ android {
 
     kotlin {
         compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
+        compilerOptions.freeCompilerArgs.add("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
+        compilerOptions.freeCompilerArgs.add("-Xannotation-default-target=param-property")
     }
 
     buildFeatures {

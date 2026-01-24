@@ -16,6 +16,8 @@ import io.github.sthenight.sfsinstaller.ui.states.ActionUiState
 import io.github.sthenight.sfsinstaller.stores.ActionOptionStore
 import io.github.sthenight.sfsinstaller.Constant
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.sthenight.sfsinstaller.models.TranslationSelection
+import io.github.sthenight.sfsinstaller.utils.AndroidStringProvider
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -28,8 +30,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.put
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import okio.buffer
@@ -39,7 +39,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ActionViewModel @Inject constructor(
-    private val actionOptionStore: ActionOptionStore
+    private val actionOptionStore: ActionOptionStore,
+    private val stringProvider: AndroidStringProvider
 ) : ViewModel() {
 
     var infoText by mutableStateOf("")
@@ -61,12 +62,22 @@ class ActionViewModel @Inject constructor(
     }
 
     private fun appendInfo(
-        context: Context,
         resId: Int,
         isWarning: Boolean = false,
         vararg args: Any?
     ) {
-        val text = context.getString(resId, *args)
+        // 粗糙的实现
+        val text = stringProvider.getString(resId, *args)
+        infoText += if (isWarning)
+            "<font color='red'>$text</font><br/>"
+        else
+            "$text<br/>"
+    }
+
+    private fun appendInfo(
+        text: String,
+        isWarning: Boolean
+    ) {
         infoText += if (isWarning)
             "<font color='red'>$text</font><br/>"
         else
@@ -78,14 +89,13 @@ class ActionViewModel @Inject constructor(
             delay(1000L)
             val state = actionOptionStore.actionOptionState.first()
 
-            appendInfo(context, R.string.action_mod_patch_selected, false, state.isModPatchSelected)
+            appendInfo(R.string.action_mod_patch_selected, false, state.isModPatchSelected)
             appendInfo(
-                context,
                 R.string.action_translation_selected,
                 false,
                 state.isTranslationSelected
             )
-            appendInfo(context, R.string.action_divider)
+            appendInfo(R.string.action_divider)
 
             val apkResult = withContext(Dispatchers.IO) {
                 val tasks = mutableListOf<Deferred<Boolean>>()
@@ -111,77 +121,90 @@ class ActionViewModel @Inject constructor(
 
     private suspend fun releaseTranslationFile(context: Context): Boolean {
         return try {
-            appendInfo(context, R.string.releasing_translation)
-
-            val mediaPath = context.externalMediaDirs[0]?.absolutePath?.toPath()
-                ?: throw IllegalStateException("externalMediaDirs is null")
-
-            val network = io.github.sthenight.sfsinstaller.utils.Network()
+            appendInfo(R.string.releasing_translation)
+            // 变量初始化
+            val mediaPath = context.externalMediaDirs.firstOrNull()?.absolutePath?.toPath()
+                ?: run {
+                    appendInfo("externalMediaDirs is null", true)
+                    return false
+                }
+            val network = io.github.sthenight.sfsinstaller.utils.NetworkProvider()
             val response = network.fetchDataAsString(Constant.REMOTE_LINK_URL)
             val remote = Json.decodeFromString<ApiFormat>(response)
             val translation = remote.translation
-
-            if (!translation.useable) {
-                appendInfo(context, R.string.translation_unavailable, true)
-                return false
-            }
-
+            // 可用性判断
+            if (!translation.useable)
+                throw IllegalStateException(stringProvider.getString(R.string.translation_unavailable))
+            // 版本判断
             if (remote.compatibleVersion != Constant.COMPATIBLE_VERSION) {
-                appendInfo(context, R.string.translation_version_mismatch, true)
+                appendInfo(R.string.translation_version_mismatch, true)
                 return false
             }
-
+            // 释放汉化包本体
             val finalPath = mediaPath
-                .div("Custom Translations")
-                .div(translation.name)
+                .div("Custom Translations/${translation.name}")
             finalPath.parent?.let {
                 FileSystem.SYSTEM.createDirectories(it)
             }
             network.fetchDataAsSource(translation.link).use { source ->
                 FileSystem.SYSTEM.sink(finalPath).buffer().use { it.writeAll(source) }
             }
-
-            val translationSelectionFilePath = mediaPath
-                .div("Saving")
-                .div("Settings")
-                .div("LanguageSettings_2.txt")
-            translationSelectionFilePath.parent?.let {
-                FileSystem.SYSTEM.createDirectories(it)
-            }
-            val json = Json { prettyPrint = true }
-            val selectionFileContent = json.encodeToString(
-                buildJsonObject {
-                    put(
-                        "codeName",
-                        translation.name.substringBeforeLast('.')
-                    )
-                    put("custom", true)
-                }
+            // 释放汉化包选择文件
+            releaseTranslationSelectionFile(
+                context,
+                translation.name.substringBeforeLast('.'),
+                true
             )
-            FileSystem.SYSTEM.sink(translationSelectionFilePath).buffer().use { sink ->
-                sink.writeUtf8(selectionFileContent)
-            }
 
-            appendInfo(context, R.string.translation_release_success)
+            appendInfo(R.string.translation_release_success)
             true
         } catch (e: Exception) {
             appendInfo(
-                context,
                 R.string.translation_release_failed,
                 true,
                 e.message ?: "Unknown"
             )
+            appendInfo(R.string.release_normal_translation)
+            releaseTranslationSelectionFile(context, "Chinese", false)
             false
+        }
+    }
+
+    private fun releaseTranslationSelectionFile(
+        context: Context,
+        codeName: String,
+        custom: Boolean
+    ) {
+        try {
+            val mediaPath = context.externalMediaDirs.firstOrNull()?.absolutePath?.toPath()
+                ?: throw IllegalStateException("externalMediaDirs is null")
+
+            val selectionFilePath = mediaPath.div("Saving/Settings/LanguageSettings_2.txt")
+            selectionFilePath.parent?.let { FileSystem.SYSTEM.createDirectories(it) }
+
+            val json = Json { prettyPrint = true }
+            val selectionObj = TranslationSelection(codeName, custom)
+            val content = json.encodeToString(selectionObj)
+
+            FileSystem.SYSTEM.sink(selectionFilePath).buffer().use { sink ->
+                sink.writeUtf8(content)
+            }
+        } catch (e: Exception) {
+            appendInfo(
+                "Translation selection release failed: ${e.message ?: "Unknown"}",
+                true,
+            )
         }
     }
 
     private fun releaseModPatchFile(context: Context): Boolean {
         return try {
-            appendInfo(context, R.string.releasing_mod_patch)
+            appendInfo(R.string.releasing_mod_patch)
 
             val dataDir = context.dataDir?.absolutePath?.toPath()
                 ?: throw IllegalStateException("dataDir is null")
-            val path = dataDir.div("shared_prefs")
+            val path = dataDir
+                .div("shared_prefs")
                 .div("com.StefMorojna.SpaceflightSimulator.v2.playerprefs.xml")
 
             path.parent?.let { FileSystem.SYSTEM.createDirectories(it) }
@@ -190,25 +213,24 @@ class ActionViewModel @Inject constructor(
                 FileSystem.SYSTEM.sink(path).buffer().use { it.writeAll(source) }
             }
 
-            appendInfo(context, R.string.mod_patch_release_success)
+            appendInfo(R.string.mod_patch_release_success)
             true
         } catch (e: java.io.IOException) {
             appendInfo(
-                context,
                 R.string.mod_patch_open_failed,
                 true,
                 e.message ?: "Unknown"
             )
             false
         } catch (e: Exception) {
-            appendInfo(context, R.string.mod_patch_release_failed, true, e.message ?: "")
+            appendInfo(R.string.mod_patch_release_failed, true, e.message ?: "")
             false
         }
     }
 
     private fun releaseApkFile(context: Context): Boolean {
         return try {
-            appendInfo(context, R.string.releasing_apk)
+            appendInfo(R.string.releasing_apk)
 
             val cachePath = context.externalCacheDir?.absolutePath?.toPath()
                 ?: throw IllegalStateException("externalCacheDir is null")
@@ -220,11 +242,11 @@ class ActionViewModel @Inject constructor(
                 }
             }
 
-            appendInfo(context, R.string.apk_release_success)
+            appendInfo(R.string.apk_release_success)
             true
         } catch (e: java.io.IOException) {
             appendInfo(
-                context,
+
                 R.string.apk_open_failed,
                 true,
                 e.message ?: "Unknown"
@@ -232,7 +254,7 @@ class ActionViewModel @Inject constructor(
             false
         } catch (e: Exception) {
             appendInfo(
-                context,
+
                 R.string.apk_release_failed,
                 true,
                 e.message ?: "Unknown"
@@ -245,13 +267,13 @@ class ActionViewModel @Inject constructor(
         try {
             if (!context.packageManager.canRequestPackageInstalls()) {
                 openPermissionGrantDialog()
-                appendInfo(context, R.string.apk_install_permission_required, true)
+                appendInfo(R.string.apk_install_permission_required, true)
                 return
             }
 
             val apkFile = File(context.externalCacheDir, "sfs.apk")
             if (!apkFile.exists()) {
-                appendInfo(context, R.string.apk_file_not_found, true)
+                appendInfo(R.string.apk_file_not_found, true)
                 return
             }
 
@@ -267,9 +289,9 @@ class ActionViewModel @Inject constructor(
             }
 
             context.startActivity(intent)
-            appendInfo(context, R.string.launch_installer)
+            appendInfo(R.string.launch_installer)
         } catch (e: Exception) {
-            appendInfo(context, R.string.launch_installer_failed, true, e.message ?: "Unknown")
+            appendInfo(R.string.launch_installer_failed, true, e.message ?: "Unknown")
         }
     }
 
@@ -281,7 +303,6 @@ class ActionViewModel @Inject constructor(
             context.startActivity(intent)
         } catch (e: Exception) {
             appendInfo(
-                context,
                 R.string.open_permission_settings_failed,
                 true,
                 e.message ?: "Unknown"

@@ -7,7 +7,7 @@ import okhttp3.Request
 import okio.BufferedSource
 import java.io.IOException
 
-class Network {
+class NetworkProvider {
     private val httpClient = OkHttpClient()
     suspend fun fetchDataAsString(url: String): String = withContext(Dispatchers.IO) {
         val request = Request.Builder().url(url).build()

@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import io.github.sthenight.sfsinstaller.R
 import io.github.sthenight.sfsinstaller.ui.components.AboutDialog
 import io.github.sthenight.sfsinstaller.ui.components.ToolbarMenu
+import io.github.sthenight.sfsinstaller.ui.components.TranslationWarningDialog
 import io.github.sthenight.sfsinstaller.ui.components.WarningDialog
 import io.github.sthenight.sfsinstaller.ui.viewmodels.MainViewModel
 
@@ -45,11 +47,14 @@ fun MainScreen(
 ) {
     var isAboutDialogShow by rememberSaveable { mutableStateOf(false) }
     var isWarningDialogShow by rememberSaveable { mutableStateOf(true) }
+    var isTranslationInstallWarningDialogShow by remember { mutableStateOf(false) }
     val state by mainViewModel.actionState.collectAsState()
     if (isAboutDialogShow)
         AboutDialog { isAboutDialogShow = false }
-    if(isWarningDialogShow)
+    if (isWarningDialogShow)
         WarningDialog { isWarningDialogShow = false }
+    if (isTranslationInstallWarningDialogShow)
+        TranslationWarningDialog { isTranslationInstallWarningDialogShow = false }
     Scaffold(
         topBar = {
             Column {
@@ -76,7 +81,11 @@ fun MainScreen(
                 MainLayout(
                     isTranslationChecked = state.isTranslationSelected,
                     isModPatchChecked = state.isModPatchSelected,
-                    onTranslationCheckedChange = { mainViewModel.setTranslationSelected(it) },
+                    onTranslationCheckedChange = {
+                        mainViewModel.setTranslationSelected(it)
+                        if(it)
+                            isTranslationInstallWarningDialogShow = true
+                    },
                     onModPatchCheckedChange = { mainViewModel.setModPatchSelected(it) },
                     switchToActionScreen = { switchToActionScreen() }
                 )
