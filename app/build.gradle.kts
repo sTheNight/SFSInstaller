@@ -20,8 +20,8 @@ android {
         applicationId = "com.StefMorojna.SpaceflightSimulator"
         minSdk = 29
         targetSdk = 36
-        versionCode = 767
-        versionName = "1.6.00.10-13"
+        versionCode = 770
+        versionName = "1.6.00.11-13"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
