@@ -1,4 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+val gameVersion = "1.6.00.12"
+val installerVersion = "14"
 
 plugins {
     alias(libs.plugins.android.application)
@@ -21,7 +23,7 @@ android {
         minSdk = 29
         targetSdk = 36
         versionCode = 773
-        versionName = "1.6.00.12-13"
+        versionName = "$gameVersion-$installerVersion"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -36,21 +38,24 @@ android {
         }
     }
 
-    buildTypes {
-        debug {
-            buildConfigField("Boolean", "IS_DEBUG", "true")
+        buildTypes {
+            all {
+                buildConfigField("String","GAME_VERSION","\"$gameVersion\"")
+            }
+            debug {
+                buildConfigField("Boolean", "IS_DEBUG", "true")
+            }
+            release {
+                buildConfigField("Boolean", "IS_DEBUG", "false")
+                isMinifyEnabled = true
+                isShrinkResources = true
+                signingConfig = signingConfigs.getByName("release")
+                proguardFiles(
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
+                )
+            }
         }
-        release {
-            buildConfigField("Boolean", "IS_DEBUG", "false")
-            isMinifyEnabled = true
-            isShrinkResources = true
-            signingConfig = signingConfigs.getByName("release")
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

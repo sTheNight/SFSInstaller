@@ -16,6 +16,7 @@ import io.github.sthenight.sfsinstaller.ui.states.ActionUiState
 import io.github.sthenight.sfsinstaller.stores.ActionOptionStore
 import io.github.sthenight.sfsinstaller.Constant
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.sthenight.sfsinstaller.BuildConfig
 import io.github.sthenight.sfsinstaller.models.TranslationSelection
 import io.github.sthenight.sfsinstaller.utils.AndroidStringProvider
 import kotlinx.coroutines.Deferred
@@ -76,7 +77,7 @@ class ActionViewModel @Inject constructor(
 
     private fun appendInfo(
         text: String,
-        isWarning: Boolean
+        isWarning: Boolean = false
     ) {
         infoText += if (isWarning)
             "<font color='red'>$text</font><br/>"
@@ -136,9 +137,14 @@ class ActionViewModel @Inject constructor(
             if (!translation.useable)
                 throw IllegalStateException(stringProvider.getString(R.string.translation_unavailable))
             // 版本判断
-            if (remote.compatibleVersion != Constant.COMPATIBLE_VERSION) {
-                appendInfo(R.string.translation_version_mismatch, true)
-                return false
+            if (remote.compatibleVersion != BuildConfig.GAME_VERSION) {
+                appendInfo(
+                    R.string.translation_version_mismatch, true,
+                    remote.compatibleVersion,
+                    BuildConfig.GAME_VERSION
+                )
+                delay(1000L)
+                throw Exception(stringProvider.getString(R.string.incompatible_version))
             }
             // 释放汉化包本体
             val finalPath = mediaPath
@@ -155,7 +161,6 @@ class ActionViewModel @Inject constructor(
                 translation.name.substringBeforeLast('.'),
                 true
             )
-
             appendInfo(R.string.translation_release_success)
             true
         } catch (e: Exception) {
@@ -164,7 +169,6 @@ class ActionViewModel @Inject constructor(
                 true,
                 e.message ?: "Unknown"
             )
-            appendInfo(R.string.release_normal_translation)
             releaseTranslationSelectionFile(context, "Chinese", false)
             false
         }
