@@ -1,5 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-val gameVersion = "1.6.00.12"
+val gameVersion = "1.6.00.13"
 val installerVersion = "14"
 
 plugins {
@@ -22,7 +22,7 @@ android {
         applicationId = "com.StefMorojna.SpaceflightSimulator"
         minSdk = 29
         targetSdk = 36
-        versionCode = 773
+        versionCode = 776
         versionName = "$gameVersion-$installerVersion"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
