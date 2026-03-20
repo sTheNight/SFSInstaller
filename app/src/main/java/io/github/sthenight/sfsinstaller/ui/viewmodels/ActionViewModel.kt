@@ -17,12 +17,14 @@ import io.github.sthenight.sfsinstaller.stores.ActionOptionStore
 import io.github.sthenight.sfsinstaller.Constant
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sthenight.sfsinstaller.BuildConfig
+import io.github.sthenight.sfsinstaller.models.TaskType
 import io.github.sthenight.sfsinstaller.models.TranslationSelection
 import io.github.sthenight.sfsinstaller.utils.AndroidStringProvider
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -88,35 +90,42 @@ class ActionViewModel @Inject constructor(
     fun startAction(context: Context) {
         viewModelScope.launch {
             delay(1000L)
-            val state = actionOptionStore.actionOptionState.first()
+
+            val state = actionOptionStore.actionOptionState.value
 
             appendInfo(R.string.action_mod_patch_selected, false, state.isModPatchSelected)
-            appendInfo(
-                R.string.action_translation_selected,
-                false,
-                state.isTranslationSelected
-            )
+            appendInfo(R.string.action_translation_selected, false, state.isTranslationSelected)
             appendInfo(R.string.action_divider)
 
-            val apkResult = withContext(Dispatchers.IO) {
-                val tasks = mutableListOf<Deferred<Boolean>>()
+            val results = withContext(Dispatchers.IO) {
+                coroutineScope {
+                    val tasks = mutableMapOf<TaskType, Deferred<Boolean>>()
 
-                if (state.isModPatchSelected) {
-                    tasks.add(async { releaseModPatchFile(context) })
+                    if (state.isModPatchSelected) {
+                        tasks[TaskType.ModpatchTask] = async {
+                            releaseModPatchFile(context)
+                        }
+                    }
+
+                    if (state.isTranslationSelected) {
+                        tasks[TaskType.TranslationTask] = async {
+                            releaseTranslationFile(context)
+                        }
+                    }
+
+                    tasks[TaskType.ApkfileTask] = async {
+                        releaseApkFile(context)
+                    }
+
+                    tasks.mapValues { (_, deferred) -> deferred.await() }
                 }
-                if (state.isTranslationSelected) {
-                    tasks.add(async { releaseTranslationFile(context) })
-                }
-
-                val apkTask = async { releaseApkFile(context) }
-                tasks.add(apkTask)
-
-                tasks.awaitAll()
-                apkTask.await()
             }
 
             delay(1000L)
-            if (apkResult) installApk(context)
+
+            if (results[TaskType.ApkfileTask] == true) {
+                installApk(context)
+            }
         }
     }
 
