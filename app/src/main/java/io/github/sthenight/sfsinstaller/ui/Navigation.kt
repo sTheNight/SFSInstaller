@@ -1,5 +1,9 @@
 package io.github.sthenight.sfsinstaller.ui
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -10,7 +14,6 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
@@ -27,6 +30,42 @@ private data object MainRoute : NavKey
 
 @Serializable
 private data object ActionRoute : NavKey
+
+private const val NAV_ANIMATION_DURATION = 280
+private const val NAV_FADE_DURATION = 180
+private const val NAV_SLIDE_DISTANCE_FACTOR = 5
+
+private fun navEnterTransition(direction: Int): EnterTransition =
+    slideInHorizontally(
+        animationSpec = tween(
+            durationMillis = NAV_ANIMATION_DURATION,
+            easing = FastOutSlowInEasing
+        )
+    ) { width -> direction * width / NAV_SLIDE_DISTANCE_FACTOR } +
+        fadeIn(animationSpec = tween(durationMillis = NAV_FADE_DURATION)) +
+        scaleIn(
+            animationSpec = tween(
+                durationMillis = NAV_ANIMATION_DURATION,
+                easing = FastOutSlowInEasing
+            ),
+            initialScale = 0.98f
+        )
+
+private fun navExitTransition(direction: Int): ExitTransition =
+    slideOutHorizontally(
+        animationSpec = tween(
+            durationMillis = NAV_ANIMATION_DURATION,
+            easing = FastOutSlowInEasing
+        )
+    ) { width -> direction * width / NAV_SLIDE_DISTANCE_FACTOR } +
+        fadeOut(animationSpec = tween(durationMillis = NAV_FADE_DURATION)) +
+        scaleOut(
+            animationSpec = tween(
+                durationMillis = NAV_ANIMATION_DURATION,
+                easing = FastOutSlowInEasing
+            ),
+            targetScale = 0.98f
+        )
 
 @Composable
 fun MainNavigation() {
@@ -59,16 +98,13 @@ fun MainNavigation() {
             }
         },
         transitionSpec = {
-            slideInHorizontally { it -> it } togetherWith fadeOut()
+            navEnterTransition(direction = 1) togetherWith navExitTransition(direction = -1)
         },
         popTransitionSpec = {
-            fadeIn() togetherWith slideOutHorizontally { it -> -it }
+            navEnterTransition(direction = -1) togetherWith navExitTransition(direction = 1)
         },
         predictivePopTransitionSpec = {
-            fadeIn() togetherWith scaleOut(
-                transformOrigin = TransformOrigin(0.2f, 0.8f),
-                targetScale = 0.8f
-            )
+            navEnterTransition(direction = -1) togetherWith navExitTransition(direction = 1)
         }
     )
 }
