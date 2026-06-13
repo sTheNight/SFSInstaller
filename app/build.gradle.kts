@@ -7,14 +7,12 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.hilt)
-    alias(libs.plugins.ksp)
 }
 
 android {
     namespace = "io.github.sthenight.sfsinstaller"
     compileSdk {
-        version = release(36)
+        version = release(37)
     }
 
 
@@ -90,9 +88,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.androidx.compose.foundation)
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-    implementation(libs.hilt.lifecycle.viewmodel.compose)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
     testImplementation(libs.junit)
     implementation(libs.androidx.compose.material3.windowsizeclass)
     implementation(libs.androidx.compose.material3.adaptivenavigationsuite)

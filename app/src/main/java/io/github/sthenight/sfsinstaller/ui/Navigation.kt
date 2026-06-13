@@ -14,7 +14,6 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -24,6 +23,7 @@ import io.github.sthenight.sfsinstaller.ui.screens.MainScreen
 import io.github.sthenight.sfsinstaller.ui.viewmodels.ActionViewModel
 import io.github.sthenight.sfsinstaller.ui.viewmodels.MainViewModel
 import kotlinx.serialization.Serializable
+import org.koin.androidx.compose.koinViewModel
 
 @Serializable
 private data object MainRoute : NavKey
@@ -70,8 +70,8 @@ private fun navExitTransition(direction: Int): ExitTransition =
 @Composable
 fun MainNavigation() {
     val backStack = rememberNavBackStack(MainRoute)
-    val mainViewModel = hiltViewModel<MainViewModel>()
-    val actionViewModel = hiltViewModel<ActionViewModel>()
+    val mainViewModel = koinViewModel<MainViewModel>()
+    val actionViewModel = koinViewModel<ActionViewModel>()
 
     fun navigateBack() {
         if (backStack.size > 1) {

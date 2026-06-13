@@ -15,7 +15,6 @@ import io.github.sthenight.sfsinstaller.models.ApiFormat
 import io.github.sthenight.sfsinstaller.ui.states.ActionUiState
 import io.github.sthenight.sfsinstaller.stores.ActionOptionStore
 import io.github.sthenight.sfsinstaller.Constant
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.github.sthenight.sfsinstaller.BuildConfig
 import io.github.sthenight.sfsinstaller.models.TaskType
 import io.github.sthenight.sfsinstaller.models.TranslationSelection
@@ -38,10 +37,8 @@ import okio.Path.Companion.toPath
 import okio.buffer
 import okio.source
 import java.io.File
-import javax.inject.Inject
 
-@HiltViewModel
-class ActionViewModel @Inject constructor(
+class ActionViewModel(
     private val actionOptionStore: ActionOptionStore,
     private val stringProvider: AndroidStringProvider
 ) : ViewModel() {
