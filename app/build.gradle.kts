@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 val gameVersion = "1.6.00.22"
-val installerVersion = "14"
+val installerVersion = "15"
 
 plugins {
     alias(libs.plugins.android.application)
@@ -8,7 +8,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
 }
-
+// 为什么这个被弃用了……
 android {
     namespace = "io.github.sthenight.sfsinstaller"
     compileSdk {
