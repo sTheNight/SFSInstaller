@@ -1,14 +1,14 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 val gameVersion = "1.6.00.22"
 val installerVersion = "15"
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
 }
-// 为什么这个被弃用了……
+
 android {
     namespace = "io.github.sthenight.sfsinstaller"
     compileSdk {
@@ -18,14 +18,21 @@ android {
 
     defaultConfig {
         applicationId = "com.StefMorojna.SpaceflightSimulator"
-        minSdk = 29
-        targetSdk = 36
+        minSdk {
+            version = release(29)
+        }
+        targetSdk {
+            version = release(36)
+        }
         versionCode = 897
         versionName = "$gameVersion-$installerVersion"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        defaultConfig.ndk.abiFilters("arm64-v8a", "armeabi-v7a")
+        ndk {
+            //noinspection ChromeOsAbiSupport
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+        }
     }
 
     signingConfigs {
@@ -36,39 +43,41 @@ android {
         }
     }
 
-        buildTypes {
-            all {
-                buildConfigField("String","GAME_VERSION","\"$gameVersion\"")
-            }
-            debug {
-                buildConfigField("Boolean", "IS_DEBUG", "true")
-            }
-            release {
-                buildConfigField("Boolean", "IS_DEBUG", "false")
-                isMinifyEnabled = true
-                isShrinkResources = true
-                signingConfig = signingConfigs.getByName("release")
-                proguardFiles(
-                    getDefaultProguardFile("proguard-android-optimize.txt"),
-                    "proguard-rules.pro"
-                )
-            }
+    buildTypes {
+        all {
+            buildConfigField("String", "GAME_VERSION", "\"$gameVersion\"")
         }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        debug {
+            buildConfigField("Boolean", "IS_DEBUG", "true")
+        }
+        release {
+            buildConfigField("Boolean", "IS_DEBUG", "false")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
     }
 
-    kotlin {
-        compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
-        compilerOptions.freeCompilerArgs.add("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
-        compilerOptions.freeCompilerArgs.add("-Xannotation-default-target=param-property")
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     buildFeatures {
         compose = true
-        android.buildFeatures.buildConfig = true
+        buildConfig = true
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+        freeCompilerArgs.add("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
+        freeCompilerArgs.add("-Xannotation-default-target=param-property")
     }
 }
 
