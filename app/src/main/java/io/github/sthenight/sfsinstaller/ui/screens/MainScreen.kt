@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.github.sthenight.sfsinstaller.R
 import io.github.sthenight.sfsinstaller.ui.components.AboutDialog
 import io.github.sthenight.sfsinstaller.ui.components.ToolbarMenu
@@ -109,8 +110,8 @@ fun MainLayout(
     ) {
         Text(
             text = stringResource(R.string.install_option),
-            style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.primary,
+            fontSize = 14.sp,
             modifier = Modifier.padding(bottom = 4.dp, start = 4.dp)
         )
         SelectionItem(
