@@ -26,7 +26,7 @@
 
     <string name="releasing_mod_patch">正在释放破解补丁</string>
     <string name="mod_patch_release_success">破解补丁释放成功</string>
-    <string name="mod_patch_open_failed">破解补丁打开失败：%!$s</string>
+    <string name="mod_patch_open_failed">破解补丁打开失败：%1$s</string>
     <string name="mod_patch_release_failed">破解补丁释放失败：%1$s</string>
 
     <string name="releasing_apk">正在释放安装包文件</string>
