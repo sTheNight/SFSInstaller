@@ -6,6 +6,10 @@ class AndroidStringProvider(
     private val context: Context
 ) {
     fun getString(redId: Int, vararg args: Any?): String {
-        return context.getString(redId, *args)
+        return try {
+            context.getString(redId, *args)
+        } catch (e: java.util.IllegalFormatException) {
+            context.getString(redId)
+        }
     }
 }
